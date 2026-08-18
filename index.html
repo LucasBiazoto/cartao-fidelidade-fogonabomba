@@ -286,16 +286,116 @@
         </div>
     </div>
 
-    <script>
+    <!-- SCRIPTS FIREBASE E APLICAÇÃO -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getFirestore, collection, doc, getDoc, setDoc, getDocs, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCh-eeItbA2W-jzpYBmoyEd-B0rj9N73YY",
+            authDomain: "cartao-fidelidade-policar.firebaseapp.com",
+            projectId: "cartao-fidelidade-policar",
+            storageBucket: "cartao-fidelidade-policar.firebasestorage.app",
+            messagingSenderId: "585423896003",
+            appId: "1:585423896003:web:7cf61df40a228b088e9176",
+            measurementId: "G-6SNN3WCV35"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
         const USER_HASH = "cG9saWNhcg=="; 
         const PASS_HASH = "MTAyMDMw"; 
-        let campanhas = JSON.parse(localStorage.getItem('fidelidade_campanhas')) || [{ nome: 'Combo de Lavagem', premio: '1 Ducha Completa Grátis', selos: 5 }];
-        let imagemFundoSalva = localStorage.getItem('fidelidade_fundo') || '';
-        let clientes = JSON.parse(localStorage.getItem('fidelidade_clientes')) || [];
+        
+        let campanhas = [{ nome: 'Combo de Lavagem', premio: '1 Ducha Completa Grátis', selos: 5 }];
+        let imagemFundoSalva = '';
+        let clientes = [];
         let clienteEncontradoAtualId = null;
         let telefoneClienteAtual = null;
 
-        window.addEventListener('DOMContentLoaded', () => {
+        window.verificarLogin = function() {
+            const user = btoa(document.getElementById('admin-user').value.trim());
+            const pass = btoa(document.getElementById('admin-pass').value.trim());
+            if (user === USER_HASH && pass === PASS_HASH) {
+                localStorage.setItem('admin_policar_autenticado', 'true');
+                location.reload();
+            } else {
+                alert('Usuário ou senha incorretos!');
+            }
+        };
+
+        window.logoutAdmin = function() {
+            localStorage.removeItem('admin_policar_autenticado');
+            location.reload();
+        };
+
+        window.toggleSidebar = function() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); };
+
+        window.switchTab = function(tabId) {
+            ['dashboard', 'config', 'campanhas', 'validador', 'clientes'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+            });
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            if (window.innerWidth < 768) toggleSidebar();
+        };
+
+        window.gerarLinkEQRCode = function() {
+            const urlBase = window.location.href.split('?')[0].split('#')[0];
+            const linkCliente = `${urlBase}?cliente=ver`;
+            document.getElementById('input-link-cliente').value = linkCliente;
+            const qr = document.getElementById('qrcode-container');
+            qr.innerHTML = '';
+            new QRCode(qr, { text: linkCliente, width: 100, height: 100 });
+        };
+
+        window.copiarLinkCliente = function() {
+            navigator.clipboard.writeText(document.getElementById('input-link-cliente').value);
+            alert('Link copiado!');
+        };
+
+        window.formatarData = function(input) {
+            let v = input.value.replace(/\D/g, '');
+            if (v.length > 2) v = v.substring(0, 2) + '/' + v.substring(2);
+            if (v.length > 5) v = v.substring(0, 5) + '/' + v.substring(5, 9);
+            input.value = v;
+        };
+
+        // CARREGAMENTO EM TEMPO REAL DO FIREBASE
+        async function carregarDadosNuvem() {
+            // Campanhas
+            const snapCamp = await getDoc(doc(db, "config", "campanhas"));
+            if (snapCamp.exists()) {
+                campanhas = snapCamp.data().lista || campanhas;
+            } else {
+                await setDoc(doc(db, "config", "campanhas"), { lista: campanhas });
+            }
+
+            // Fundo
+            const snapFundo = await getDoc(doc(db, "config", "fundo"));
+            if (snapFundo.exists()) {
+                imagemFundoSalva = snapFundo.data().url || '';
+            }
+
+            // Ouvir Clientes em Tempo Real
+            onSnapshot(collection(db, "clientes"), (snapshot) => {
+                clientes = [];
+                snapshot.forEach((docSnap) => {
+                    clientes.push({ idDoc: docSnap.id, ...docSnap.data() });
+                });
+
+                if (localStorage.getItem('admin_policar_autenticado') === 'true') {
+                    atualizarSistema();
+                }
+
+                if (telefoneClienteAtual) {
+                    carregarCartaoClienteLogado(telefoneClienteAtual);
+                }
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            await carregarDadosNuvem();
+
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('cliente') === 'ver') {
                 document.getElementById('login-admin-view').classList.add('hidden');
@@ -307,7 +407,6 @@
                     telefoneClienteAtual = telAlvo;
                     localStorage.setItem('fidelidade_cliente_logado', telAlvo);
                     carregarCartaoClienteLogado(telAlvo);
-                    setInterval(atualizarCartaoEmTempoReal, 2000);
                 } else {
                     document.getElementById('cliente-tela-cadastro').classList.remove('hidden');
                     document.getElementById('cliente-tela-cartao').classList.add('hidden');
@@ -326,55 +425,7 @@
             }
         });
 
-        function formatarData(input) {
-            let v = input.value.replace(/\D/g, '');
-            if (v.length > 2) v = v.substring(0, 2) + '/' + v.substring(2);
-            if (v.length > 5) v = v.substring(0, 5) + '/' + v.substring(5, 9);
-            input.value = v;
-        }
-
-        function verificarLogin() {
-            const user = btoa(document.getElementById('admin-user').value.trim());
-            const pass = btoa(document.getElementById('admin-pass').value.trim());
-            if (user === USER_HASH && pass === PASS_HASH) {
-                localStorage.setItem('admin_policar_autenticado', 'true');
-                location.reload();
-            } else {
-                alert('Usuário ou senha incorretos!');
-            }
-        }
-
-        function logoutAdmin() {
-            localStorage.removeItem('admin_policar_autenticado');
-            location.reload();
-        }
-
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); }
-
-        function switchTab(tabId) {
-            ['dashboard', 'config', 'campanhas', 'validador', 'clientes'].forEach(t => {
-                document.getElementById(`tab-${t}`).classList.add('hidden');
-            });
-            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-            if (window.innerWidth < 768) toggleSidebar();
-        }
-
-        function gerarLinkEQRCode() {
-            const urlBase = window.location.href.split('?')[0].split('#')[0];
-            const linkCliente = `${urlBase}?cliente=ver`;
-            document.getElementById('input-link-cliente').value = linkCliente;
-            const qr = document.getElementById('qrcode-container');
-            qr.innerHTML = '';
-            new QRCode(qr, { text: linkCliente, width: 100, height: 100 });
-        }
-
-        function copiarLinkCliente() {
-            navigator.clipboard.writeText(document.getElementById('input-link-cliente').value);
-            alert('Link copiado!');
-        }
-
         function gerarProximoIdCliente() {
-            clientes = JSON.parse(localStorage.getItem('fidelidade_clientes')) || [];
             let maiorNum = 0;
             clientes.forEach(c => {
                 if (c.id && c.id.startsWith('CLI-')) {
@@ -385,17 +436,18 @@
             return `CLI-${maiorNum + 1}`;
         }
 
-        function cadastrarClienteFinal(event) {
+        window.cadastrarClienteFinal = async function(event) {
             event.preventDefault();
             const nome = document.getElementById('cli-cad-nome').value.trim();
             const telefone = document.getElementById('cli-cad-tel').value.trim();
             const aniversario = document.getElementById('cli-cad-aniversario').value;
+            let telLimpo = telefone.replace(/\D/g, '');
 
-            clientes = JSON.parse(localStorage.getItem('fidelidade_clientes')) || [];
-            let cli = clientes.find(c => c.telefone.replace(/\D/g, '') === telefone.replace(/\D/g, ''));
+            let cli = clientes.find(c => c.telefone.replace(/\D/g, '') === telLimpo);
             if (!cli) {
+                const novoId = gerarProximoIdCliente();
                 cli = {
-                    id: gerarProximoIdCliente(),
+                    id: novoId,
                     nome: nome,
                     telefone: telefone,
                     aniversario: aniversario || '',
@@ -404,19 +456,16 @@
                     premiosResgatados: 0,
                     premioPendente: false
                 };
-                clientes.push(cli);
-                localStorage.setItem('fidelidade_clientes', JSON.stringify(clientes));
+                await setDoc(doc(db, "clientes", telLimpo), cli);
             }
 
             telefoneClienteAtual = telefone;
             localStorage.setItem('fidelidade_cliente_logado', telefone);
             window.history.replaceState({}, '', `?cliente=ver&tel=${telefone}`);
             carregarCartaoClienteLogado(telefone);
-            setInterval(atualizarCartaoEmTempoReal, 2000);
-        }
+        };
 
-        function carregarCartaoClienteLogado(telefone) {
-            clientes = JSON.parse(localStorage.getItem('fidelidade_clientes')) || [];
+        window.carregarCartaoClienteLogado = function(telefone) {
             let telLimpo = telefone.replace(/\D/g, '');
             let cli = clientes.find(c => c.telefone.replace(/\D/g, '') === telLimpo);
             if (!cli) return;
@@ -451,30 +500,24 @@
                 document.getElementById('parabens-texto-premio').innerText = camp.premio;
                 document.getElementById('modal-parabens-cliente').classList.remove('hidden');
             }
-        }
+        };
 
-        function atualizarCartaoEmTempoReal() {
-            if (telefoneClienteAtual) {
-                carregarCartaoClienteLogado(telefoneClienteAtual);
-            }
-        }
-
-        function fecharModalParabens() {
+        window.fecharModalParabens = async function() {
             document.getElementById('modal-parabens-cliente').classList.add('hidden');
-            clientes = JSON.parse(localStorage.getItem('fidelidade_clientes')) || [];
-            let cli = clientes.find(c => c.telefone.replace(/\D/g, '') === telefoneClienteAtual.replace(/\D/g, ''));
+            let telLimpo = telefoneClienteAtual.replace(/\D/g, '');
+            let cli = clientes.find(c => c.telefone.replace(/\D/g, '') === telLimpo);
             if (cli) {
                 cli.premioPendente = false;
-                localStorage.setItem('fidelidade_clientes', JSON.stringify(clientes));
+                await updateDoc(doc(db, "clientes", telLimpo), { premioPendente: false });
             }
-        }
+        };
 
-        function sairContaCliente() {
+        window.sairContaCliente = function() {
             localStorage.removeItem('fidelidade_cliente_logado');
             window.location.href = window.location.pathname + '?cliente=ver';
-        }
+        };
 
-        function carregarImagemFundo(e) {
+        window.carregarImagemFundo = function(e) {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
@@ -485,16 +528,16 @@
                 };
                 reader.readAsDataURL(file);
             }
-        }
+        };
 
-        function salvarFotoFundo() {
+        window.salvarFotoFundo = async function() {
             if (imagemFundoSalva) {
-                localStorage.setItem('fidelidade_fundo', imagemFundoSalva);
-                alert('Fundo salvo!');
+                await setDoc(doc(db, "config", "fundo"), { url: imagemFundoSalva });
+                alert('Fundo salvo na nuvem com sucesso!');
             }
-        }
+        };
 
-        function abrirModalCampanha(index = null) {
+        window.abrirModalCampanha = function(index = null) {
             document.getElementById('modal-campanha').classList.remove('hidden');
             if (index !== null) {
                 document.getElementById('modal-campanha-titulo').innerText = 'Editar Campanha';
@@ -509,11 +552,11 @@
                 document.getElementById('campanha-premio').value = '';
                 document.getElementById('campanha-selos').value = 5;
             }
-        }
+        };
 
-        function fecharModalCampanha() { document.getElementById('modal-campanha').classList.add('hidden'); }
+        window.fecharModalCampanha = function() { document.getElementById('modal-campanha').classList.add('hidden'); };
         
-        function salvarCampanha(e) {
+        window.salvarCampanha = async function(e) {
             e.preventDefault();
             const index = document.getElementById('campanha-index').value;
             const nome = document.getElementById('campanha-nome').value;
@@ -526,34 +569,32 @@
                 campanhas[index] = { nome, premio, selos };
             }
 
-            localStorage.setItem('fidelidade_campanhas', JSON.stringify(campanhas));
+            await setDoc(doc(db, "config", "campanhas"), { lista: campanhas });
             fecharModalCampanha();
             atualizarSistema();
-        }
+        };
 
-        function excluirCampanha(index) {
+        window.excluirCampanha = async function(index) {
             if (confirm('Deseja excluir esta campanha?')) {
                 campanhas.splice(index, 1);
-                localStorage.setItem('fidelidade_campanhas', JSON.stringify(campanhas));
+                await setDoc(doc(db, "config", "campanhas"), { lista: campanhas });
                 atualizarSistema();
             }
-        }
+        };
 
-        function buscarClienteCaixa() {
+        window.buscarClienteCaixa = function() {
             const termo = document.getElementById('busca-cliente-input').value.trim().toLowerCase();
             const container = document.getElementById('resultado-busca-container');
             if (!termo) { container.classList.add('hidden'); return; }
 
-            clientes = JSON.parse(localStorage.getItem('fidelidade_clientes')) || [];
             let termoLimpo = termo.replace(/\D/g, '');
-            
             let cli = clientes.find(c => {
                 let telLimpo = c.telefone.replace(/\D/g, '');
                 return c.id.toLowerCase() === termo || (termoLimpo && telLimpo.includes(termoLimpo)) || c.nome.toLowerCase().includes(termo);
             });
 
             if (cli) {
-                clienteEncontradoAtualId = cli.id;
+                clienteEncontradoAtualId = cli.telefone.replace(/\D/g, '');
                 container.classList.remove('hidden');
                 document.getElementById('res-nome').innerText = cli.nome;
                 document.getElementById('res-id').innerText = cli.id;
@@ -569,7 +610,7 @@
                 container.classList.add('hidden');
                 alert('Cliente não encontrado.');
             }
-        }
+        };
 
         function atualizarSelosCaixa(cli) {
             const campIdx = cli.campanhaIndex || 0;
@@ -590,22 +631,21 @@
             }
         }
 
-        function mudarCampanhaCaixa(val) {
-            clientes = JSON.parse(localStorage.getItem('fidelidade_clientes')) || [];
-            let cli = clientes.find(c => c.id === clienteEncontradoAtualId);
+        window.mudarCampanhaCaixa = async function(val) {
+            let cli = clientes.find(c => c.telefone.replace(/\D/g, '') === clienteEncontradoAtualId);
             if(cli) {
                 cli.campanhaIndex = parseInt(val);
-                localStorage.setItem('fidelidade_clientes', JSON.stringify(clientes));
+                await updateDoc(doc(db, "clientes", clienteEncontradoAtualId), { campanhaIndex: cli.campanhaIndex });
                 atualizarSelosCaixa(cli);
             }
-        }
+        };
 
-        function adicionarCarimboClienteExistente() {
-            clientes = JSON.parse(localStorage.getItem('fidelidade_clientes')) || [];
-            let cli = clientes.find(c => c.id === clienteEncontradoAtualId);
+        window.adicionarCarimboClienteExistente = async function() {
+            let cli = clientes.find(c => c.telefone.replace(/\D/g, '') === clienteEncontradoAtualId);
             if (!cli) return;
             const campIdx = cli.campanhaIndex || 0;
             const camp = campanhas[campIdx];
+            if(!cli.progressoCampanhas) cli.progressoCampanhas = {};
             if(!cli.progressoCampanhas[campIdx]) cli.progressoCampanhas[campIdx] = { selos: 0, historicoSelos: [] };
             
             cli.progressoCampanhas[campIdx].selos += 1;
@@ -623,30 +663,36 @@
             } else {
                 alert('Carimbo adicionado!');
             }
-            localStorage.setItem('fidelidade_clientes', JSON.stringify(clientes));
+
+            await updateDoc(doc(db, "clientes", clienteEncontradoAtualId), {
+                progressoCampanhas: cli.progressoCampanhas,
+                premiosResgatados: cli.premiosResgatados,
+                premioPendente: cli.premioPendente
+            });
+
             buscarClienteCaixa();
             atualizarSistema();
-        }
+        };
 
-        function removerCarimboClienteExistente() {
-            clientes = JSON.parse(localStorage.getItem('fidelidade_clientes')) || [];
-            let cli = clientes.find(c => c.id === clienteEncontradoAtualId);
+        window.removerCarimboClienteExistente = async function() {
+            let cli = clientes.find(c => c.telefone.replace(/\D/g, '') === clienteEncontradoAtualId);
             if (!cli) return;
             const campIdx = cli.campanhaIndex || 0;
-            if(cli.progressoCampanhas[campIdx] && cli.progressoCampanhas[campIdx].selos > 0) {
+            if(cli.progressoCampanhas && cli.progressoCampanhas[campIdx] && cli.progressoCampanhas[campIdx].selos > 0) {
                 cli.progressoCampanhas[campIdx].selos -= 1;
                 if(cli.progressoCampanhas[campIdx].historicoSelos.length > 0) {
                     cli.progressoCampanhas[campIdx].historicoSelos.pop();
                 }
-                localStorage.setItem('fidelidade_clientes', JSON.stringify(clientes));
+                await updateDoc(doc(db, "clientes", clienteEncontradoAtualId), {
+                    progressoCampanhas: cli.progressoCampanhas
+                });
                 buscarClienteCaixa();
                 atualizarSistema();
                 alert('Selo removido!');
             }
-        }
+        };
 
-        function atualizarSistema() {
-            clientes = JSON.parse(localStorage.getItem('fidelidade_clientes')) || [];
+        window.atualizarSistema = function() {
             document.getElementById('metric-clientes').innerText = clientes.length;
             
             let totalSelos = 0, totalPremios = 0;
@@ -686,9 +732,9 @@
             }
 
             renderizarTabelaClientes();
-        }
+        };
 
-        function renderizarTabelaClientes() {
+        window.renderizarTabelaClientes = function() {
             const corpoT = document.getElementById('tabela-clientes-corpo');
             const filtroTexto = document.getElementById('filtro-texto').value.toLowerCase();
             const filtroCampanha = document.getElementById('filtro-tabela-campanha').value;
@@ -724,7 +770,7 @@
                     </tr>`;
             });
             document.getElementById('contador-registros').innerText = `${filtrados.length} registros`;
-        }
+        };
     </script>
 </body>
 </html>
