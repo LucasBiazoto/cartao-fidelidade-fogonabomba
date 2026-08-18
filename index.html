@@ -217,7 +217,12 @@
                         <div class="flex justify-between items-center"><h2 class="text-lg font-bold">Base de Clientes</h2><span id="contador-registros" class="bg-slate-100 text-xs px-3 py-1.5 rounded">0 registros</span></div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t text-sm">
                             <input type="text" id="filtro-texto" oninput="renderizarTabelaClientes()" placeholder="🔍 Buscar por nome, WhatsApp ou ID..." class="bg-slate-50 border rounded-lg px-3.5 py-2">
-                            <select id="filtro-tabela-campanha" onchange="renderizarTabelaClientes()" class="bg-slate-50 border rounded-lg px-3.5 py-2"><option value="todas">Todas as Campanhas</option></select>
+                            <select id="filtro-tabela-campanha" onchange="renderizarTabelaClientes()" class="bg-slate-50 border rounded-lg px-3.5 py-2">
+                                <option value="todas">Todas as Campanhas</option>
+                                <option value="falta1">⭐ Falta 1 selo para o prêmio!</option>
+                                <option value="falta2">⭐ Faltam 2 selos para o prêmio!</option>
+                                <option value="falta3">⭐ Faltam 3 selos para o prêmio!</option>
+                            </select>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left text-sm text-slate-600">
@@ -679,14 +684,6 @@
                 });
             }
 
-            const selectCampTabela = document.getElementById('filtro-tabela-campanha');
-            if(selectCampTabela) {
-                selectCampTabela.innerHTML = '<option value="todas">Todas as Campanhas</option>';
-                campanhas.forEach((c, idx) => {
-                    selectCampTabela.innerHTML += `<option value="${idx}">${c.nome}</option>`;
-                });
-            }
-
             renderizarTabelaClientes();
         };
 
@@ -709,12 +706,20 @@
 
             filtrados.forEach(cli => {
                 const campIdx = cli.campanhaIndex || 0;
-                if(campVal !== 'todas' && campIdx.toString() !== campVal) return;
-
                 const camp = campanhas[campIdx] || campanhas[0];
                 const prog = cli.progressoCampanhas && cli.progressoCampanhas[campIdx] ? cli.progressoCampanhas[campIdx].selos : 0;
+                const faltam = camp.selos - prog;
+
+                // Filtro por selos faltantes
+                if (campVal === 'falta1' && faltam !== 1) return;
+                if (campVal === 'falta2' && faltam !== 2) return;
+                if (campVal === 'falta3' && faltam !== 3) return;
+                if (campVal !== 'todas' && campVal !== 'falta1' && campVal !== 'falta2' && campVal !== 'falta3' && campIdx.toString() !== campVal) return;
+
                 const linkCartao = `${urlBase}?cliente=ver&tel=${cli.telefone}`;
-                const msgZap = `Olá ${cli.nome}, acesse seu cartão fidelidade Policar aqui: ${linkCartao}`;
+                
+                // Mensagem inteligente baseada em quantos selos faltam
+                let msgZap = `Olá ${cli.nome}! Passando para lembrar que faltam apenas *${faltam} ${faltam === 1 ? 'selo' : 'selos'}* para você resgatar o seu prêmio (*${camp.premio}*) aqui na Policar! Venha nos visitar hoje e garantir o seu carimbo. ⭐🚗\n\nAcesse seu cartão: ${linkCartao}`;
 
                 corpoT.innerHTML += `
                     <tr class="border-b hover:bg-slate-50">
