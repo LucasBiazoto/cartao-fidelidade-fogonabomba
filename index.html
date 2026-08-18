@@ -343,11 +343,22 @@
                     }
                 }
 
+                // Sincronização em tempo real para o painel e para o cartão do cliente
                 onSnapshot(collection(db, "clientes"), (snapshot) => {
                     clientes = [];
                     snapshot.forEach((docSnap) => { clientes.push({ idDoc: docSnap.id, ...docSnap.data() }); });
-                    if (localStorage.getItem('admin_policar_autenticado') === 'true') { atualizarSistema(); }
-                    if (telefoneClienteAtual) { carregarCartaoClienteLogado(telefoneClienteAtual); }
+                    
+                    if (localStorage.getItem('admin_policar_autenticado') === 'true') { 
+                        atualizarSistema(); 
+                        if (clienteEncontradoAtualId) {
+                            let cliAtual = clientes.find(c => c.telefone.replace(/\D/g, '') === clienteEncontradoAtualId);
+                            if(cliAtual) atualizarSelosCaixa(cliAtual);
+                        }
+                    }
+
+                    if (telefoneClienteAtual) { 
+                        carregarCartaoClienteLogado(telefoneClienteAtual); 
+                    }
                 });
             } catch (e) { console.error("Erro ao conectar com Firebase:", e); }
         }
@@ -458,6 +469,8 @@
                 document.getElementById('parabens-nome-cliente').innerText = cli.nome.split(' ')[0];
                 document.getElementById('parabens-texto-premio').innerText = camp.premio;
                 document.getElementById('modal-parabens-cliente').classList.remove('hidden');
+            } else {
+                document.getElementById('modal-parabens-cliente').classList.add('hidden');
             }
         };
 
@@ -627,9 +640,6 @@
                 premiosResgatados: cli.premiosResgatados,
                 premioPendente: cli.premioPendente
             });
-
-            buscarClienteCaixa();
-            atualizarSistema();
         };
 
         window.removerCarimboClienteExistente = async function() {
@@ -644,8 +654,6 @@
                 await updateDoc(doc(db, "clientes", clienteEncontradoAtualId), {
                     progressoCampanhas: cli.progressoCampanhas
                 });
-                buscarClienteCaixa();
-                atualizarSistema();
                 alert('Selo removido!');
             }
         };
@@ -710,15 +718,12 @@
                 const prog = cli.progressoCampanhas && cli.progressoCampanhas[campIdx] ? cli.progressoCampanhas[campIdx].selos : 0;
                 const faltam = camp.selos - prog;
 
-                // Filtro por selos faltantes
                 if (campVal === 'falta1' && faltam !== 1) return;
                 if (campVal === 'falta2' && faltam !== 2) return;
                 if (campVal === 'falta3' && faltam !== 3) return;
                 if (campVal !== 'todas' && campVal !== 'falta1' && campVal !== 'falta2' && campVal !== 'falta3' && campIdx.toString() !== campVal) return;
 
                 const linkCartao = `${urlBase}?cliente=ver&tel=${cli.telefone}`;
-                
-                // Mensagem inteligente baseada em quantos selos faltam
                 let msgZap = `Olá ${cli.nome}! Passando para lembrar que faltam apenas *${faltam} ${faltam === 1 ? 'selo' : 'selos'}* para você resgatar o seu prêmio (*${camp.premio}*) aqui na Policar! Venha nos visitar hoje e garantir o seu carimbo. ⭐🚗\n\nAcesse seu cartão: ${linkCartao}`;
 
                 corpoT.innerHTML += `
