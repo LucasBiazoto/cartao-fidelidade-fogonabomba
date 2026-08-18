@@ -325,7 +325,18 @@
                 else { await setDoc(doc(db, "config", "campanhas"), { lista: campanhas }); }
 
                 const snapFundo = await getDoc(doc(db, "config", "fundo"));
-                if (snapFundo.exists()) { imagemFundoSalva = snapFundo.data().url || ''; }
+                if (snapFundo.exists()) { 
+                    imagemFundoSalva = snapFundo.data().url || ''; 
+                    if(imagemFundoSalva) {
+                        const banner = document.getElementById('cartao-fundo-banner');
+                        if(banner) banner.style.backgroundImage = `url('${imagemFundoSalva}')`;
+                        const prev = document.getElementById('preview-fundo');
+                        if(prev) {
+                            prev.style.backgroundImage = `url('${imagemFundoSalva}')`;
+                            document.getElementById('preview-container').classList.remove('hidden');
+                        }
+                    }
+                }
 
                 onSnapshot(collection(db, "clientes"), (snapshot) => {
                     clientes = [];
@@ -476,6 +487,8 @@
         window.salvarFotoFundo = async function() {
             if (imagemFundoSalva) {
                 await setDoc(doc(db, "config", "fundo"), { url: imagemFundoSalva });
+                const banner = document.getElementById('cartao-fundo-banner');
+                if(banner) banner.style.backgroundImage = `url('${imagemFundoSalva}')`;
                 alert('Fundo salvo na nuvem com sucesso!');
             }
         };
