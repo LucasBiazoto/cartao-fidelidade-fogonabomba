@@ -343,7 +343,6 @@
                     }
                 }
 
-                // Sincronização em tempo real para o painel e para o cartão do cliente
                 onSnapshot(collection(db, "clientes"), (snapshot) => {
                     clientes = [];
                     snapshot.forEach((docSnap) => { clientes.push({ idDoc: docSnap.id, ...docSnap.data() }); });
@@ -615,7 +614,8 @@
             let cli = clientes.find(c => c.telefone.replace(/\D/g, '') === clienteEncontradoAtualId);
             if (!cli) return;
             const campIdx = cli.campanhaIndex || 0;
-            const camp = campanhas[campIdx];
+            const camp = campanhas[campIdx] || campanhas[0];
+            
             if(!cli.progressoCampanhas) cli.progressoCampanhas = {};
             if(!cli.progressoCampanhas[campIdx]) cli.progressoCampanhas[campIdx] = { selos: 0, historicoSelos: [] };
             
@@ -636,10 +636,12 @@
             }
 
             await updateDoc(doc(db, "clientes", clienteEncontradoAtualId), {
-                progressoCampanhas: cli.progressoCampanhas,
+                progressoCampanhas: JSON.parse(JSON.stringify(cli.progressoCampanhas)),
                 premiosResgatados: cli.premiosResgatados,
                 premioPendente: cli.premioPendente
             });
+
+            atualizarSelosCaixa(cli);
         };
 
         window.removerCarimboClienteExistente = async function() {
@@ -652,8 +654,9 @@
                     cli.progressoCampanhas[campIdx].historicoSelos.pop();
                 }
                 await updateDoc(doc(db, "clientes", clienteEncontradoAtualId), {
-                    progressoCampanhas: cli.progressoCampanhas
+                    progressoCampanhas: JSON.parse(JSON.stringify(cli.progressoCampanhas))
                 });
+                atualizarSelosCaixa(cli);
                 alert('Selo removido!');
             }
         };
@@ -666,7 +669,11 @@
             clientes.forEach(c => {
                 totalPremios += (c.premiosResgatados || 0);
                 if (c.progressoCampanhas) {
-                    for (let k in c.progressoCampanhas) totalSelos += (c.progressoCampanhas[k].selos || 0);
+                    for (let k in c.progressoCampanhas) {
+                        if(c.progressoCampanhas[k] && typeof c.progressoCampanhas[k].selos === 'number') {
+                            totalSelos += c.progressoCampanhas[k].selos;
+                        }
+                    }
                 }
             });
             const elMetSelos = document.getElementById('metric-selos');
@@ -715,7 +722,7 @@
             filtrados.forEach(cli => {
                 const campIdx = cli.campanhaIndex || 0;
                 const camp = campanhas[campIdx] || campanhas[0];
-                const prog = cli.progressoCampanhas && cli.progressoCampanhas[campIdx] ? cli.progressoCampanhas[campIdx].selos : 0;
+                const prog = (cli.progressoCampanhas && cli.progressoCampanhas[campIdx] && cli.progressoCampanhas[campIdx].selos) ? cli.progressoCampanhas[campIdx].selos : 0;
                 const faltam = camp.selos - prog;
 
                 if (campVal === 'falta1' && faltam !== 1) return;
