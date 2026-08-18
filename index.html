@@ -31,8 +31,6 @@
 
     <!-- TELA EXTERNA DO CLIENTE -->
     <div id="app-cliente-view" class="hidden min-h-screen bg-slate-100 flex items-center justify-center p-4">
-        
-        <!-- Cadastro Inicial -->
         <div id="cliente-tela-cadastro" class="max-w-md w-full bg-white rounded-2xl border border-slate-200 shadow-sm p-8 space-y-6">
             <div class="text-center space-y-2">
                 <div class="w-12 h-12 bg-slate-800 text-white rounded-xl mx-auto flex items-center justify-center text-xl font-bold">
@@ -61,14 +59,9 @@
             </form>
         </div>
 
-        <!-- Cartão do Cliente -->
         <div id="cliente-tela-cartao" class="hidden max-w-md w-full bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden space-y-3 relative pb-5">
-            
-            <!-- Modal de Parabéns / Meta Conquistada -->
             <div id="modal-parabens-cliente" class="hidden absolute inset-0 bg-slate-950/90 z-50 flex flex-col items-center justify-center p-6 text-center text-white space-y-5 backdrop-blur-md">
-                <div class="w-20 h-20 bg-amber-400 text-slate-950 rounded-full flex items-center justify-center text-4xl shadow-lg animate-bounce-slow">
-                    🎉
-                </div>
+                <div class="w-20 h-20 bg-amber-400 text-slate-950 rounded-full flex items-center justify-center text-4xl shadow-lg animate-bounce-slow">🎉</div>
                 <div class="space-y-2">
                     <h2 class="text-2xl font-bold tracking-wide">Parabéns, <span id="parabens-nome-cliente">Cliente</span>!</h2>
                     <p class="text-xs uppercase tracking-widest text-amber-300 font-semibold">Meta Conquistada com Sucesso</p>
@@ -105,17 +98,14 @@
                     </div>
                     <div id="cartao-grid-selos" class="grid grid-cols-5 gap-2 pt-1"></div>
                 </div>
-
                 <div class="text-center pt-1">
-                    <button onclick="sairContaCliente()" class="text-[11px] text-slate-400 hover:text-slate-600 underline transition">
-                        Sair e trocar de usuário
-                    </button>
+                    <button onclick="sairContaCliente()" class="text-[11px] text-slate-400 hover:text-slate-600 underline transition">Sair e trocar de usuário</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- PAINEL ADMINISTRATIVO COMPLETO -->
+    <!-- PAINEL ADMIN -->
     <div id="app-admin-view" class="hidden flex h-screen overflow-hidden bg-slate-50 w-full">
         <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 shadow-sm transform -translate-x-full transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:inset-auto flex flex-col">
             <div class="flex items-center justify-between h-16 px-6 border-b border-slate-200">
@@ -142,11 +132,8 @@
             </header>
 
             <main class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
-                <!-- DASHBOARD -->
                 <div id="tab-dashboard" class="space-y-6">
-                    <div class="bg-white p-6 rounded-xl border shadow-sm">
-                        <h1 class="text-xl md:text-2xl font-bold text-slate-800">Painel de Controle - Policar 📊</h1>
-                    </div>
+                    <div class="bg-white p-6 rounded-xl border shadow-sm"><h1 class="text-xl md:text-2xl font-bold text-slate-800">Painel de Controle - Policar 📊</h1></div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                         <div class="bg-white p-6 rounded-xl border shadow-sm"><h3 class="text-slate-400 text-xs font-semibold uppercase">CLIENTES</h3><p id="metric-clientes" class="text-3xl font-bold mt-2">0</p></div>
                         <div class="bg-white p-6 rounded-xl border shadow-sm"><h3 class="text-slate-400 text-xs font-semibold uppercase">SELOS ⭐</h3><p id="metric-selos" class="text-3xl font-bold text-amber-500 mt-2">0</p></div>
@@ -154,7 +141,6 @@
                     </div>
                 </div>
 
-                <!-- CONFIGURAR FOTO DE FUNDO -->
                 <div id="tab-config" class="hidden space-y-6">
                     <div class="bg-white p-6 rounded-xl border shadow-sm max-w-xl space-y-4">
                         <h2 class="text-lg font-bold text-slate-800">Fundo do Cartão</h2>
@@ -164,7 +150,6 @@
                     </div>
                 </div>
 
-                <!-- CAMPANHAS -->
                 <div id="tab-campanhas" class="hidden space-y-6">
                     <div class="bg-white p-6 rounded-xl border shadow-sm">
                         <div class="flex justify-between items-center mb-6">
@@ -175,7 +160,6 @@
                     </div>
                 </div>
 
-                <!-- VALIDADOR / CAIXA -->
                 <div id="tab-validador" class="hidden space-y-6">
                     <div class="max-w-lg mx-auto space-y-6">
                         <div class="bg-white p-6 rounded-xl border shadow-sm flex flex-col md:flex-row justify-between items-center gap-6">
@@ -228,28 +212,17 @@
                     </div>
                 </div>
 
-                <!-- BASE DE CLIENTES -->
                 <div id="tab-clientes" class="hidden space-y-6">
                     <div class="bg-white p-6 rounded-xl border shadow-sm space-y-4">
                         <div class="flex justify-between items-center"><h2 class="text-lg font-bold">Base de Clientes</h2><span id="contador-registros" class="bg-slate-100 text-xs px-3 py-1.5 rounded">0 registros</span></div>
-                        
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t text-sm">
                             <input type="text" id="filtro-texto" oninput="renderizarTabelaClientes()" placeholder="🔍 Buscar por nome, WhatsApp ou ID..." class="bg-slate-50 border rounded-lg px-3.5 py-2">
-                            <select id="filtro-tabela-campanha" onchange="renderizarTabelaClientes()" class="bg-slate-50 border rounded-lg px-3.5 py-2">
-                                <option value="todas">Todas as Campanhas</option>
-                            </select>
+                            <select id="filtro-tabela-campanha" onchange="renderizarTabelaClientes()" class="bg-slate-50 border rounded-lg px-3.5 py-2"><option value="todas">Todas as Campanhas</option></select>
                         </div>
-
                         <div class="overflow-x-auto">
                             <table class="w-full text-left text-sm text-slate-600">
                                 <thead class="bg-slate-100 text-xs uppercase">
-                                    <tr>
-                                        <th class="p-3">ID</th>
-                                        <th class="p-3">Nome</th>
-                                        <th class="p-3">WhatsApp</th>
-                                        <th class="p-3">Progresso</th>
-                                        <th class="p-3 text-right">Ação / WhatsApp</th>
-                                    </tr>
+                                    <tr><th class="p-3">ID</th><th class="p-3">Nome</th><th class="p-3">WhatsApp</th><th class="p-3">Progresso</th><th class="p-3 text-right">Ação / WhatsApp</th></tr>
                                 </thead>
                                 <tbody id="tabela-clientes-corpo"></tbody>
                             </table>
@@ -260,36 +233,23 @@
         </div>
     </div>
 
-    <!-- MODAL CAMPANHA -->
     <div id="modal-campanha" class="fixed inset-0 bg-black/40 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-lg border space-y-4">
             <h3 id="modal-campanha-titulo" class="text-lg font-bold">Nova Campanha</h3>
             <form onsubmit="salvarCampanha(event)" class="space-y-3 text-sm">
                 <input type="hidden" id="campanha-index">
-                <div>
-                    <label class="block font-medium text-slate-700 mb-1">Nome da Campanha</label>
-                    <input type="text" id="campanha-nome" required placeholder="Ex: Combo de Lavagem" class="w-full border rounded-lg p-2.5">
-                </div>
-                <div>
-                    <label class="block font-medium text-slate-700 mb-1">Descrição do Prêmio</label>
-                    <input type="text" id="campanha-premio" required placeholder="Ex: 1 Ducha Completa Grátis" class="w-full border rounded-lg p-2.5">
-                </div>
-                <div>
-                    <label class="block font-medium text-slate-700 mb-1">Quantidade de Selos</label>
-                    <input type="number" id="campanha-selos" required value="5" min="1" class="w-full border rounded-lg p-2.5">
-                </div>
-                <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="fecharModalCampanha()" class="px-4 py-2 border rounded">Cancelar</button>
-                    <button type="submit" class="px-4 py-2 bg-slate-800 text-white rounded">Salvar</button>
-                </div>
+                <div><label class="block font-medium text-slate-700 mb-1">Nome da Campanha</label><input type="text" id="campanha-nome" required class="w-full border rounded-lg p-2.5"></div>
+                <div><label class="block font-medium text-slate-700 mb-1">Descrição do Prêmio</label><input type="text" id="campanha-premio" required class="w-full border rounded-lg p-2.5"></div>
+                <div><label class="block font-medium text-slate-700 mb-1">Quantidade de Selos</label><input type="number" id="campanha-selos" required value="5" min="1" class="w-full border rounded-lg p-2.5"></div>
+                <div class="flex justify-end gap-2 pt-2"><button type="button" onclick="fecharModalCampanha()" class="px-4 py-2 border rounded">Cancelar</button><button type="submit" class="px-4 py-2 bg-slate-800 text-white rounded">Salvar</button></div>
             </form>
         </div>
     </div>
 
-    <!-- SCRIPTS FIREBASE E APLICAÇÃO -->
+    <!-- SCRIPT FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, collection, doc, getDoc, setDoc, getDocs, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCh-eeItbA2W-jzpYBmoyEd-B0rj9N73YY",
@@ -319,9 +279,7 @@
             if (user === USER_HASH && pass === PASS_HASH) {
                 localStorage.setItem('admin_policar_autenticado', 'true');
                 location.reload();
-            } else {
-                alert('Usuário ou senha incorretos!');
-            }
+            } else { alert('Usuário ou senha incorretos!'); }
         };
 
         window.logoutAdmin = function() {
@@ -360,37 +318,22 @@
             input.value = v;
         };
 
-        // CARREGAMENTO EM TEMPO REAL DO FIREBASE
         async function carregarDadosNuvem() {
-            // Campanhas
-            const snapCamp = await getDoc(doc(db, "config", "campanhas"));
-            if (snapCamp.exists()) {
-                campanhas = snapCamp.data().lista || campanhas;
-            } else {
-                await setDoc(doc(db, "config", "campanhas"), { lista: campanhas });
-            }
+            try {
+                const snapCamp = await getDoc(doc(db, "config", "campanhas"));
+                if (snapCamp.exists()) { campanhas = snapCamp.data().lista || campanhas; } 
+                else { await setDoc(doc(db, "config", "campanhas"), { lista: campanhas }); }
 
-            // Fundo
-            const snapFundo = await getDoc(doc(db, "config", "fundo"));
-            if (snapFundo.exists()) {
-                imagemFundoSalva = snapFundo.data().url || '';
-            }
+                const snapFundo = await getDoc(doc(db, "config", "fundo"));
+                if (snapFundo.exists()) { imagemFundoSalva = snapFundo.data().url || ''; }
 
-            // Ouvir Clientes em Tempo Real
-            onSnapshot(collection(db, "clientes"), (snapshot) => {
-                clientes = [];
-                snapshot.forEach((docSnap) => {
-                    clientes.push({ idDoc: docSnap.id, ...docSnap.data() });
+                onSnapshot(collection(db, "clientes"), (snapshot) => {
+                    clientes = [];
+                    snapshot.forEach((docSnap) => { clientes.push({ idDoc: docSnap.id, ...docSnap.data() }); });
+                    if (localStorage.getItem('admin_policar_autenticado') === 'true') { atualizarSistema(); }
+                    if (telefoneClienteAtual) { carregarCartaoClienteLogado(telefoneClienteAtual); }
                 });
-
-                if (localStorage.getItem('admin_policar_autenticado') === 'true') {
-                    atualizarSistema();
-                }
-
-                if (telefoneClienteAtual) {
-                    carregarCartaoClienteLogado(telefoneClienteAtual);
-                }
-            });
+            } catch (e) { console.error("Erro ao conectar com Firebase:", e); }
         }
 
         window.addEventListener('DOMContentLoaded', async () => {
@@ -563,11 +506,8 @@
             const premio = document.getElementById('campanha-premio').value;
             const selos = parseInt(document.getElementById('campanha-selos').value);
 
-            if (index === '') {
-                campanhas.push({ nome, premio, selos });
-            } else {
-                campanhas[index] = { nome, premio, selos };
-            }
+            if (index === '') { campanhas.push({ nome, premio, selos }); } 
+            else { campanhas[index] = { nome, premio, selos }; }
 
             await setDoc(doc(db, "config", "campanhas"), { lista: campanhas });
             fecharModalCampanha();
@@ -693,7 +633,8 @@
         };
 
         window.atualizarSistema = function() {
-            document.getElementById('metric-clientes').innerText = clientes.length;
+            const elMetCli = document.getElementById('metric-clientes');
+            if(elMetCli) elMetCli.innerText = clientes.length;
             
             let totalSelos = 0, totalPremios = 0;
             clientes.forEach(c => {
@@ -702,8 +643,10 @@
                     for (let k in c.progressoCampanhas) totalSelos += (c.progressoCampanhas[k].selos || 0);
                 }
             });
-            document.getElementById('metric-selos').innerText = totalSelos;
-            document.getElementById('metric-premios').innerText = totalPremios;
+            const elMetSelos = document.getElementById('metric-selos');
+            const elMetPremios = document.getElementById('metric-premios');
+            if(elMetSelos) elMetSelos.innerText = totalSelos;
+            if(elMetPremios) elMetPremios.innerText = totalPremios;
 
             const listaC = document.getElementById('lista-campanhas');
             if(listaC) {
@@ -736,21 +679,24 @@
 
         window.renderizarTabelaClientes = function() {
             const corpoT = document.getElementById('tabela-clientes-corpo');
-            const filtroTexto = document.getElementById('filtro-texto').value.toLowerCase();
-            const filtroCampanha = document.getElementById('filtro-tabela-campanha').value;
+            const filtroTexto = document.getElementById('filtro-texto');
+            const filtroCampanha = document.getElementById('filtro-tabela-campanha');
 
             if(!corpoT) return;
             corpoT.innerHTML = '';
 
+            const textoVal = filtroTexto ? filtroTexto.value.toLowerCase() : '';
+            const campVal = filtroCampanha ? filtroCampanha.value : 'todas';
+
             const urlBase = window.location.href.split('?')[0].split('#')[0];
             let filtrados = clientes.filter(cli => {
-                const matchTexto = cli.nome.toLowerCase().includes(filtroTexto) || cli.telefone.includes(filtroTexto) || cli.id.toLowerCase().includes(filtroTexto);
+                const matchTexto = cli.nome.toLowerCase().includes(textoVal) || cli.telefone.includes(textoVal) || cli.id.toLowerCase().includes(textoVal);
                 return matchTexto;
             });
 
             filtrados.forEach(cli => {
                 const campIdx = cli.campanhaIndex || 0;
-                if(filtroCampanha !== 'todas' && campIdx.toString() !== filtroCampanha) return;
+                if(campVal !== 'todas' && campIdx.toString() !== campVal) return;
 
                 const camp = campanhas[campIdx] || campanhas[0];
                 const prog = cli.progressoCampanhas && cli.progressoCampanhas[campIdx] ? cli.progressoCampanhas[campIdx].selos : 0;
@@ -769,7 +715,8 @@
                         </td>
                     </tr>`;
             });
-            document.getElementById('contador-registros').innerText = `${filtrados.length} registros`;
+            const contadorEl = document.getElementById('contador-registros');
+            if(contadorEl) contadorEl.innerText = `${filtrados.length} registros`;
         };
     </script>
 </body>
