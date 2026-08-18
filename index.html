@@ -31,6 +31,8 @@
 
     <!-- TELA EXTERNA DO CLIENTE -->
     <div id="app-cliente-view" class="hidden min-h-screen bg-slate-100 flex items-center justify-center p-4">
+        
+        <!-- Cadastro Inicial -->
         <div id="cliente-tela-cadastro" class="max-w-md w-full bg-white rounded-2xl border border-slate-200 shadow-sm p-8 space-y-6">
             <div class="text-center space-y-2">
                 <div class="w-12 h-12 bg-slate-800 text-white rounded-xl mx-auto flex items-center justify-center text-xl font-bold">
@@ -59,7 +61,27 @@
             </form>
         </div>
 
+        <!-- Cartão do Cliente -->
         <div id="cliente-tela-cartao" class="hidden max-w-md w-full bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden space-y-3 relative pb-5">
+            
+            <!-- Modal de Parabéns / Meta Conquistada -->
+            <div id="modal-parabens-cliente" class="hidden absolute inset-0 bg-slate-950/90 z-50 flex flex-col items-center justify-center p-6 text-center text-white space-y-5 backdrop-blur-md">
+                <div class="w-20 h-20 bg-amber-400 text-slate-950 rounded-full flex items-center justify-center text-4xl shadow-lg animate-bounce-slow">
+                    🎉
+                </div>
+                <div class="space-y-2">
+                    <h2 class="text-2xl font-bold tracking-wide">Parabéns, <span id="parabens-nome-cliente">Cliente</span>!</h2>
+                    <p class="text-xs uppercase tracking-widest text-amber-300 font-semibold">Meta Conquistada com Sucesso</p>
+                </div>
+                <div class="bg-white/10 border border-white/20 rounded-xl p-4 w-full">
+                    <p class="text-xs text-slate-300 font-medium">Prêmio Resgatado:</p>
+                    <p id="parabens-texto-premio" class="text-base font-bold text-white mt-0.5">Procedimento Especial</p>
+                </div>
+                <button onclick="fecharModalParabens()" class="w-full bg-amber-400 hover:bg-amber-300 text-slate-950 py-3 rounded-xl font-bold text-sm shadow transition">
+                    Continuar e Ver Novo Ciclo ⭐
+                </button>
+            </div>
+
             <div id="cartao-fundo-banner" class="h-56 bg-slate-900 bg-cover bg-center p-4 flex justify-between items-start text-white relative">
                 <div class="absolute inset-0 bg-black/10"></div>
                 <span id="cartao-id-badge" class="relative z-10 text-[10px] bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded font-semibold">CLI-1</span>
@@ -83,6 +105,7 @@
                     </div>
                     <div id="cartao-grid-selos" class="grid grid-cols-5 gap-2 pt-1"></div>
                 </div>
+
                 <div class="text-center pt-1">
                     <button onclick="sairContaCliente()" class="text-[11px] text-slate-400 hover:text-slate-600 underline transition">
                         Sair e trocar de usuário
@@ -174,9 +197,7 @@
                             <div class="space-y-4 text-sm">
                                 <div class="flex gap-2">
                                     <input type="text" id="busca-cliente-input" placeholder="Digite WhatsApp ou ID (ex: 11984681343 ou CLI-1)" class="w-full bg-slate-50 border rounded-lg px-4 py-2.5 focus:outline-none">
-                                    <button onclick="buscarClienteCaixa()" class="bg-slate-800 text-white px-5 py-2.5 rounded-lg font-medium transition">
-                                        <i class="fa-solid fa-search"></i>
-                                    </button>
+                                    <button onclick="buscarClienteCaixa()" class="bg-slate-800 text-white px-5 py-2.5 rounded-lg font-medium transition"><i class="fa-solid fa-search"></i></button>
                                 </div>
 
                                 <div id="resultado-busca-container" class="hidden border bg-slate-50 rounded-xl p-4 space-y-4">
@@ -190,9 +211,12 @@
                                         <label class="block font-medium text-slate-700 mb-1">Campanha</label>
                                         <select id="res-campanha" onchange="mudarCampanhaCaixa(this.value)" class="w-full bg-white border rounded-lg px-3 py-2 text-slate-800"></select>
                                     </div>
-                                    <div class="bg-white p-3 rounded-lg border flex items-center justify-between">
-                                        <span class="font-medium text-slate-700">Selos:</span>
-                                        <span id="res-selos-qtd" class="text-xl font-bold text-amber-500">0 / 5 ⭐</span>
+                                    <div class="bg-white p-3 rounded-lg border space-y-2">
+                                        <div class="flex items-center justify-between">
+                                            <span class="font-medium text-slate-700">Selos:</span>
+                                            <span id="res-selos-qtd" class="text-xl font-bold text-amber-500">0 / 5 ⭐</span>
+                                        </div>
+                                        <div id="res-historico-selos" class="pt-2 border-t text-xs text-slate-500 space-y-1"></div>
                                     </div>
                                     <div class="grid grid-cols-2 gap-2">
                                         <button onclick="removerCarimboClienteExistente()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 py-2.5 rounded-lg font-medium text-xs border">Remover Selo</button>
@@ -208,6 +232,14 @@
                 <div id="tab-clientes" class="hidden space-y-6">
                     <div class="bg-white p-6 rounded-xl border shadow-sm space-y-4">
                         <div class="flex justify-between items-center"><h2 class="text-lg font-bold">Base de Clientes</h2><span id="contador-registros" class="bg-slate-100 text-xs px-3 py-1.5 rounded">0 registros</span></div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t text-sm">
+                            <input type="text" id="filtro-texto" oninput="renderizarTabelaClientes()" placeholder="🔍 Buscar por nome, WhatsApp ou ID..." class="bg-slate-50 border rounded-lg px-3.5 py-2">
+                            <select id="filtro-tabela-campanha" onchange="renderizarTabelaClientes()" class="bg-slate-50 border rounded-lg px-3.5 py-2">
+                                <option value="todas">Todas as Campanhas</option>
+                            </select>
+                        </div>
+
                         <div class="overflow-x-auto">
                             <table class="w-full text-left text-sm text-slate-600">
                                 <thead class="bg-slate-100 text-xs uppercase">
@@ -275,6 +307,7 @@
                     telefoneClienteAtual = telAlvo;
                     localStorage.setItem('fidelidade_cliente_logado', telAlvo);
                     carregarCartaoClienteLogado(telAlvo);
+                    setInterval(atualizarCartaoEmTempoReal, 2000);
                 } else {
                     document.getElementById('cliente-tela-cadastro').classList.remove('hidden');
                     document.getElementById('cliente-tela-cartao').classList.add('hidden');
@@ -355,11 +388,11 @@
         function cadastrarClienteFinal(event) {
             event.preventDefault();
             const nome = document.getElementById('cli-cad-nome').value.trim();
-            const telefone = document.getElementById('cli-cad-tel').value.trim().replace(/\D/g, '');
+            const telefone = document.getElementById('cli-cad-tel').value.trim();
             const aniversario = document.getElementById('cli-cad-aniversario').value;
 
             clientes = JSON.parse(localStorage.getItem('fidelidade_clientes')) || [];
-            let cli = clientes.find(c => c.telefone.replace(/\D/g, '') === telefone);
+            let cli = clientes.find(c => c.telefone.replace(/\D/g, '') === telefone.replace(/\D/g, ''));
             if (!cli) {
                 cli = {
                     id: gerarProximoIdCliente(),
@@ -368,7 +401,8 @@
                     aniversario: aniversario || '',
                     campanhaIndex: 0,
                     progressoCampanhas: {},
-                    premiosResgatados: 0
+                    premiosResgatados: 0,
+                    premioPendente: false
                 };
                 clientes.push(cli);
                 localStorage.setItem('fidelidade_clientes', JSON.stringify(clientes));
@@ -378,6 +412,7 @@
             localStorage.setItem('fidelidade_cliente_logado', telefone);
             window.history.replaceState({}, '', `?cliente=ver&tel=${telefone}`);
             carregarCartaoClienteLogado(telefone);
+            setInterval(atualizarCartaoEmTempoReal, 2000);
         }
 
         function carregarCartaoClienteLogado(telefone) {
@@ -391,11 +426,13 @@
 
             const campIdx = cli.campanhaIndex || 0;
             const camp = campanhas[campIdx] || campanhas[0];
+            if (!cli.progressoCampanhas) cli.progressoCampanhas = {};
             if (!cli.progressoCampanhas[campIdx]) cli.progressoCampanhas[campIdx] = { selos: 0, historicoSelos: [] };
             const prog = cli.progressoCampanhas[campIdx];
 
             document.getElementById('cartao-id-badge').innerText = cli.id;
             document.getElementById('cartao-nome-cliente').innerText = cli.nome;
+            document.getElementById('cartao-detalhes-cliente').innerText = `Tel: ${cli.telefone} • ID: ${cli.id}`;
             document.getElementById('cartao-progresso-texto').innerText = `${prog.selos} de ${camp.selos} selos`;
 
             if (imagemFundoSalva) {
@@ -407,6 +444,28 @@
             for (let i = 1; i <= camp.selos; i++) {
                 let preenchido = i <= prog.selos;
                 grid.innerHTML += `<div class="h-14 rounded-xl border-2 ${preenchido ? 'border-amber-400 bg-amber-50 text-amber-500' : 'border-slate-200 bg-white text-slate-300'} flex items-center justify-center text-lg font-bold"><i class="fa-solid fa-star"></i></div>`;
+            }
+
+            if (cli.premioPendente) {
+                document.getElementById('parabens-nome-cliente').innerText = cli.nome.split(' ')[0];
+                document.getElementById('parabens-texto-premio').innerText = camp.premio;
+                document.getElementById('modal-parabens-cliente').classList.remove('hidden');
+            }
+        }
+
+        function atualizarCartaoEmTempoReal() {
+            if (telefoneClienteAtual) {
+                carregarCartaoClienteLogado(telefoneClienteAtual);
+            }
+        }
+
+        function fecharModalParabens() {
+            document.getElementById('modal-parabens-cliente').classList.add('hidden');
+            clientes = JSON.parse(localStorage.getItem('fidelidade_clientes')) || [];
+            let cli = clientes.find(c => c.telefone.replace(/\D/g, '') === telefoneClienteAtual.replace(/\D/g, ''));
+            if (cli) {
+                cli.premioPendente = false;
+                localStorage.setItem('fidelidade_clientes', JSON.stringify(clientes));
             }
         }
 
@@ -518,6 +577,17 @@
             if (!cli.progressoCampanhas) cli.progressoCampanhas = {};
             if (!cli.progressoCampanhas[campIdx]) cli.progressoCampanhas[campIdx] = { selos: 0, historicoSelos: [] };
             document.getElementById('res-selos-qtd').innerText = `${cli.progressoCampanhas[campIdx].selos} / ${camp.selos} ⭐`;
+
+            const histContainer = document.getElementById('res-historico-selos');
+            histContainer.innerHTML = '';
+            let hist = cli.progressoCampanhas[campIdx].historicoSelos || [];
+            if (hist.length === 0) {
+                histContainer.innerHTML = '<span class="text-slate-400 italic">Nenhum selo aplicado.</span>';
+            } else {
+                hist.forEach((dh, idx) => {
+                    histContainer.innerHTML += `<div>⭐ <b>${idx+1}° selo:</b> ${dh}</div>`;
+                });
+            }
         }
 
         function mudarCampanhaCaixa(val) {
@@ -539,9 +609,16 @@
             if(!cli.progressoCampanhas[campIdx]) cli.progressoCampanhas[campIdx] = { selos: 0, historicoSelos: [] };
             
             cli.progressoCampanhas[campIdx].selos += 1;
+            
+            const agora = new Date();
+            const dhFormatada = agora.toLocaleDateString('pt-BR') + ' às ' + agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+            cli.progressoCampanhas[campIdx].historicoSelos.push(dhFormatada);
+
             if (cli.progressoCampanhas[campIdx].selos >= camp.selos) {
                 cli.premiosResgatados = (cli.premiosResgatados || 0) + 1;
                 cli.progressoCampanhas[campIdx].selos = 0;
+                cli.progressoCampanhas[campIdx].historicoSelos = [];
+                cli.premioPendente = true;
                 alert(`Meta atingida! Prêmio: ${camp.premio}`);
             } else {
                 alert('Carimbo adicionado!');
@@ -558,6 +635,9 @@
             const campIdx = cli.campanhaIndex || 0;
             if(cli.progressoCampanhas[campIdx] && cli.progressoCampanhas[campIdx].selos > 0) {
                 cli.progressoCampanhas[campIdx].selos -= 1;
+                if(cli.progressoCampanhas[campIdx].historicoSelos.length > 0) {
+                    cli.progressoCampanhas[campIdx].historicoSelos.pop();
+                }
                 localStorage.setItem('fidelidade_clientes', JSON.stringify(clientes));
                 buscarClienteCaixa();
                 atualizarSistema();
@@ -597,31 +677,53 @@
                 });
             }
 
-            const corpoT = document.getElementById('tabela-clientes-corpo');
-            if(corpoT) {
-                corpoT.innerHTML = '';
-                const urlBase = window.location.href.split('?')[0].split('#')[0];
-                clientes.forEach(cli => {
-                    const campIdx = cli.campanhaIndex || 0;
-                    const camp = campanhas[campIdx] || campanhas[0];
-                    const prog = cli.progressoCampanhas && cli.progressoCampanhas[campIdx] ? cli.progressoCampanhas[campIdx].selos : 0;
-                    const linkCartao = `${urlBase}?cliente=ver&tel=${cli.telefone}`;
-                    const msgZap = `Olá ${cli.nome}, acesse seu cartão fidelidade Policar aqui: ${linkCartao}`;
-
-                    corpoT.innerHTML += `
-                        <tr class="border-b hover:bg-slate-50">
-                            <td class="p-3 font-bold">${cli.id}</td>
-                            <td class="p-3">${cli.nome}</td>
-                            <td class="p-3">${cli.telefone}</td>
-                            <td class="p-3">${prog} / ${camp.selos} ⭐</td>
-                            <td class="p-3 text-right space-x-1">
-                                <a href="?cliente=ver&tel=${cli.telefone}" target="_blank" class="bg-white border text-slate-700 px-2.5 py-1.5 rounded text-xs" title="Ver Cartão"><i class="fa-solid fa-eye"></i></a>
-                                <a href="https://wa.me/55${cli.telefone.replace(/\D/g, '')}?text=${encodeURIComponent(msgZap)}" target="_blank" class="bg-emerald-600 text-white px-2.5 py-1.5 rounded text-xs inline-flex items-center gap-1" title="Enviar WhatsApp"><i class="fa-brands fa-whatsapp"></i> Zap</a>
-                            </td>
-                        </tr>`;
+            const selectCampTabela = document.getElementById('filtro-tabela-campanha');
+            if(selectCampTabela) {
+                selectCampTabela.innerHTML = '<option value="todas">Todas as Campanhas</option>';
+                campanhas.forEach((c, idx) => {
+                    selectCampTabela.innerHTML += `<option value="${idx}">${c.nome}</option>`;
                 });
-                document.getElementById('contador-registros').innerText = `${clientes.length} registros`;
             }
+
+            renderizarTabelaClientes();
+        }
+
+        function renderizarTabelaClientes() {
+            const corpoT = document.getElementById('tabela-clientes-corpo');
+            const filtroTexto = document.getElementById('filtro-texto').value.toLowerCase();
+            const filtroCampanha = document.getElementById('filtro-tabela-campanha').value;
+
+            if(!corpoT) return;
+            corpoT.innerHTML = '';
+
+            const urlBase = window.location.href.split('?')[0].split('#')[0];
+            let filtrados = clientes.filter(cli => {
+                const matchTexto = cli.nome.toLowerCase().includes(filtroTexto) || cli.telefone.includes(filtroTexto) || cli.id.toLowerCase().includes(filtroTexto);
+                return matchTexto;
+            });
+
+            filtrados.forEach(cli => {
+                const campIdx = cli.campanhaIndex || 0;
+                if(filtroCampanha !== 'todas' && campIdx.toString() !== filtroCampanha) return;
+
+                const camp = campanhas[campIdx] || campanhas[0];
+                const prog = cli.progressoCampanhas && cli.progressoCampanhas[campIdx] ? cli.progressoCampanhas[campIdx].selos : 0;
+                const linkCartao = `${urlBase}?cliente=ver&tel=${cli.telefone}`;
+                const msgZap = `Olá ${cli.nome}, acesse seu cartão fidelidade Policar aqui: ${linkCartao}`;
+
+                corpoT.innerHTML += `
+                    <tr class="border-b hover:bg-slate-50">
+                        <td class="p-3 font-bold">${cli.id}</td>
+                        <td class="p-3">${cli.nome}</td>
+                        <td class="p-3">${cli.telefone}</td>
+                        <td class="p-3">${prog} / ${camp.selos} ⭐</td>
+                        <td class="p-3 text-right space-x-1">
+                            <a href="?cliente=ver&tel=${cli.telefone}" target="_blank" class="bg-white border text-slate-700 px-2.5 py-1.5 rounded text-xs" title="Ver Cartão"><i class="fa-solid fa-eye"></i></a>
+                            <a href="https://wa.me/55${cli.telefone.replace(/\D/g, '')}?text=${encodeURIComponent(msgZap)}" target="_blank" class="bg-emerald-600 text-white px-2.5 py-1.5 rounded text-xs inline-flex items-center gap-1" title="Enviar WhatsApp"><i class="fa-brands fa-whatsapp"></i> Zap</a>
+                        </td>
+                    </tr>`;
+            });
+            document.getElementById('contador-registros').innerText = `${filtrados.length} registros`;
         }
     </script>
 </body>
