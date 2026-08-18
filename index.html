@@ -16,64 +16,384 @@
 </head>
 <body class="h-full bg-slate-50 text-slate-700 antialiased">
 
-    <!-- LOGIN ADMIN -->
+    <!-- TELA DE LOGIN DO ADMIN -->
     <div id="login-admin-view" class="hidden min-h-screen bg-slate-100 flex items-center justify-center p-4">
         <div class="max-w-xs w-full bg-white p-8 rounded-2xl shadow-lg border border-slate-200 text-center space-y-4">
+            <div class="w-12 h-12 bg-slate-800 text-white rounded-full mx-auto flex items-center justify-center text-xl">
+                <i class="fa-solid fa-lock"></i>
+            </div>
             <h2 class="font-bold text-slate-800 text-base">Acesso Policar</h2>
-            <input type="text" id="admin-user" placeholder="Usuário" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm text-center focus:outline-none">
-            <input type="password" id="admin-pass" placeholder="Senha" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm text-center focus:outline-none">
-            <button onclick="verificarLogin()" class="w-full bg-slate-800 hover:bg-slate-700 text-white py-2.5 rounded-lg text-sm font-medium transition">Entrar</button>
+            <input type="text" id="admin-user" placeholder="Usuário" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm text-center focus:outline-none focus:border-slate-500">
+            <input type="password" id="admin-pass" placeholder="Senha" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm text-center focus:outline-none focus:border-slate-500">
+            <button onclick="verificarLogin()" class="w-full bg-slate-800 hover:bg-slate-700 text-white py-2.5 rounded-lg text-sm font-medium transition shadow-sm">Entrar no Painel</button>
         </div>
     </div>
 
-    <!-- TELA CLIENTE -->
+    <!-- TELA EXTERNA DO CLIENTE -->
     <div id="app-cliente-view" class="hidden min-h-screen bg-slate-100 flex items-center justify-center p-4">
+        
+        <!-- Cadastro Inicial -->
         <div id="cliente-tela-cadastro" class="max-w-md w-full bg-white rounded-2xl border border-slate-200 shadow-sm p-8 space-y-6">
-            <h2 class="text-xl font-bold text-slate-900 text-center">Policar Fidelidade</h2>
+            <div class="text-center space-y-2">
+                <div class="w-12 h-12 bg-slate-800 text-white rounded-xl mx-auto flex items-center justify-center text-xl font-bold">
+                    <i class="fa-solid fa-car"></i>
+                </div>
+                <h2 class="text-xl font-bold text-slate-900">Policar Fidelidade</h2>
+                <p class="text-sm text-slate-500">Informe seus dados para acessar seu cartão e acumular carimbos.</p>
+            </div>
+
             <form onsubmit="cadastrarClienteFinal(event)" class="space-y-4 text-sm">
-                <input type="text" id="cli-cad-nome" required placeholder="Nome Completo" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5">
-                <input type="text" id="cli-cad-tel" required placeholder="WhatsApp" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5">
-                <input type="text" id="cli-cad-aniversario" placeholder="dd/mm/aaaa" oninput="formatarData(this)" maxlength="10" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5">
-                <button type="submit" class="w-full bg-slate-800 text-white py-3 rounded-lg font-medium">Acessar Meu Cartão ⭐</button>
+                <div>
+                    <label class="block font-medium text-slate-700 mb-1">Nome Completo</label>
+                    <input type="text" id="cli-cad-nome" required placeholder="Digite seu nome e sobrenome" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 focus:outline-none focus:border-slate-500">
+                </div>
+                <div>
+                    <label class="block font-medium text-slate-700 mb-1">Número de Telefone (WhatsApp)</label>
+                    <input type="text" id="cli-cad-tel" required placeholder="(11) 99999-9999" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 focus:outline-none focus:border-slate-500">
+                </div>
+                <div>
+                    <label class="block font-medium text-slate-700 mb-1">Data de Aniversário (Opcional)</label>
+                    <input type="text" id="cli-cad-aniversario" placeholder="dd/mm/aaaa" oninput="formatarData(this)" maxlength="10" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-900 focus:outline-none focus:border-slate-500">
+                </div>
+                <button type="submit" class="w-full bg-slate-800 hover:bg-slate-700 text-white py-3 rounded-lg font-medium transition shadow-sm">
+                    Acessar Meu Cartão ⭐
+                </button>
             </form>
         </div>
-        <div id="cliente-tela-cartao" class="hidden max-w-md w-full bg-white rounded-2xl border shadow-sm pb-5">
-            <div id="cartao-fundo-banner" class="h-40 bg-slate-900 bg-cover bg-center rounded-t-2xl"></div>
-            <div class="p-6 text-center">
-                <h3 id="cartao-nome-cliente" class="font-bold text-lg"></h3>
-                <div id="cartao-grid-selos" class="grid grid-cols-5 gap-2 my-4"></div>
-                <button onclick="sairContaCliente()" class="text-xs text-slate-400 underline">Sair</button>
+
+        <!-- Cartão do Cliente -->
+        <div id="cliente-tela-cartao" class="hidden max-w-md w-full bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden space-y-3 relative pb-5">
+            
+            <div id="modal-parabens-cliente" class="hidden absolute inset-0 bg-slate-950/90 z-50 flex flex-col items-center justify-center p-6 text-center text-white space-y-5 backdrop-blur-md">
+                <div class="w-20 h-20 bg-amber-400 text-slate-950 rounded-full flex items-center justify-center text-4xl shadow-lg animate-bounce-slow">🎉</div>
+                <div class="space-y-2">
+                    <h2 class="text-2xl font-bold tracking-wide">Parabéns, <span id="parabens-nome-cliente">Cliente</span>!</h2>
+                    <p class="text-xs uppercase tracking-widest text-amber-300 font-semibold">Meta Conquistada com Sucesso</p>
+                </div>
+                <div class="bg-white/10 border border-white/20 rounded-xl p-4 w-full">
+                    <p class="text-xs text-slate-300 font-medium">Prêmio Resgatado:</p>
+                    <p id="parabens-texto-premio" class="text-base font-bold text-white mt-0.5">Procedimento Especial</p>
+                </div>
+                <button onclick="fecharModalParabens()" class="w-full bg-amber-400 hover:bg-amber-300 text-slate-950 py-3 rounded-xl font-bold text-sm shadow transition">
+                    Continuar e Ver Novo Ciclo ⭐
+                </button>
             </div>
+
+            <div id="cartao-fundo-banner" class="h-56 bg-slate-900 bg-cover bg-center p-4 flex justify-between items-start text-white relative">
+                <div class="absolute inset-0 bg-black/10"></div>
+                <span id="cartao-id-badge" class="relative z-10 text-[10px] bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded font-semibold">CLI-1</span>
+                <span class="relative z-10 text-[10px] bg-emerald-600/90 backdrop-blur-sm px-2.5 py-1 rounded font-semibold">Ativo</span>
+            </div>
+
+            <div class="px-5 -mt-5 relative z-10">
+                <div class="bg-white border border-slate-200 rounded-lg py-2 px-3 shadow-sm flex items-center justify-between text-xs">
+                    <div>
+                        <h3 id="cartao-nome-cliente" class="font-bold text-slate-800 text-sm">Nome do Cliente</h3>
+                        <p id="cartao-detalhes-cliente" class="text-[11px] text-slate-400">Tel: (00) 00000-0000 • ID: CLI-1</p>
+                    </div>
+                    <span id="cartao-nome-campanha" class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">Campanha</span>
+                </div>
+            </div>
+
+            <div class="px-5 space-y-3">
+                <div id="container-seletor-campanha-cliente" class="space-y-0.5">
+                    <label class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Campanha Ativa:</label>
+                    <select id="cliente-mudar-campanha" onchange="mudarCampanhaClienteVisualizacao(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 font-medium focus:outline-none"></select>
+                </div>
+
+                <div class="bg-slate-50/70 border border-slate-200/80 rounded-xl p-4 space-y-2 text-center">
+                    <div class="flex justify-between items-center px-1">
+                        <span class="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">Seu Progresso</span>
+                        <span id="cartao-progresso-texto" class="text-xs font-bold text-slate-700">0 de 5 selos</span>
+                    </div>
+                    <div id="cartao-grid-selos" class="grid grid-cols-5 gap-2 pt-1"></div>
+                </div>
+
+                <div class="bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-center flex items-center justify-between text-xs">
+                    <div>
+                        <span class="text-[10px] text-slate-400 block text-left">Prêmio:</span>
+                        <span id="cartao-premio-texto" class="font-bold text-slate-800">Carregando prêmio...</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[10px] text-slate-400 block">Resgates Totais:</span>
+                        <span id="cartao-resgates-totais" class="font-bold text-emerald-600">0</span>
+                    </div>
+                </div>
+
+                <div class="text-center pt-1">
+                    <button onclick="sairContaCliente()" class="text-[11px] text-slate-400 hover:text-slate-600 underline transition">
+                        Não é o seu cartão? Sair e trocar de usuário
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- PAINEL ADMINISTRATIVO COMPLETO -->
+    <div id="app-admin-view" class="hidden flex h-screen overflow-hidden bg-slate-50 w-full">
+
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 shadow-sm transform -translate-x-full transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:inset-auto flex flex-col">
+            <div class="flex items-center justify-between h-16 px-6 border-b border-slate-200">
+                <span class="text-base font-bold text-slate-800 tracking-wide">Policar Fidelidade</span>
+                <button onclick="toggleSidebar()" class="md:hidden text-slate-500 hover:text-slate-800">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <nav class="p-4 space-y-1.5 flex-1">
+                <a href="#dashboard" onclick="switchTab('dashboard')" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-slate-800 text-white font-medium text-sm transition">
+                    <i class="fa-solid fa-chart-pie w-5"></i> Painel de Controle
+                </a>
+                <a href="#config" onclick="switchTab('config')" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 font-medium text-sm transition">
+                    <i class="fa-solid fa-image w-5"></i> Fundo do Cartão
+                </a>
+                <a href="#campanhas" onclick="switchTab('campanhas')" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 font-medium text-sm transition">
+                    <i class="fa-solid fa-bullhorn w-5"></i> Campanhas
+                </a>
+                <a href="#validador" onclick="switchTab('validador')" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 font-medium text-sm transition">
+                    <i class="fa-solid fa-qrcode w-5"></i> Validador / Caixa
+                </a>
+                <a href="#clientes" onclick="switchTab('clientes')" class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 font-medium text-sm transition">
+                    <i class="fa-solid fa-users w-5"></i> Base de Clientes
+                </a>
+            </nav>
+
+            <div class="p-4 border-t border-slate-200 space-y-2">
+                <button onclick="logoutAdmin()" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-700 hover:bg-slate-100 font-medium text-sm transition text-left">
+                    <i class="fa-solid fa-right-from-bracket w-5"></i> Sair do Painel
+                </button>
+                <button onclick="limparBancoTotal()" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-red-600 hover:bg-red-50 font-medium text-sm transition text-left">
+                    <i class="fa-solid fa-trash-can w-5"></i> Limpar Dados / Cache
+                </button>
+            </div>
+        </aside>
+
+        <div class="flex flex-col flex-1 h-full overflow-hidden">
+            <header class="flex items-center justify-between h-16 px-6 bg-white border-b border-slate-200 md:hidden">
+                <button onclick="toggleSidebar()" class="text-slate-600 hover:text-slate-900 focus:outline-none">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+                <span class="font-bold text-slate-800 text-sm">Policar Administrativo</span>
+                <div class="w-6"></div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
+                
+                <!-- DASHBOARD -->
+                <div id="tab-dashboard" class="space-y-6">
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h1 class="text-xl md:text-2xl font-bold text-slate-800">Painel de Controle - Policar 📊</h1>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-slate-400 text-xs font-semibold tracking-wider uppercase">CLIENTES CADASTRADOS</h3>
+                                <p id="metric-clientes" class="text-3xl font-bold text-slate-800 mt-2">0</p>
+                            </div>
+                            <span class="text-xs text-slate-400 mt-4 block">Clientes vinculados ao sistema</span>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-slate-400 text-xs font-semibold tracking-wider uppercase">SELOS CARIMBADOS ⭐</h3>
+                                <p id="metric-selos" class="text-3xl font-bold text-amber-500 mt-2">0</p>
+                            </div>
+                            <span class="text-xs text-slate-400 mt-4 block">Total de carimbos entregues</span>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-slate-400 text-xs font-semibold tracking-wider uppercase">PRÊMIOS ENTREGUES</h3>
+                                <p id="metric-premios" class="text-3xl font-bold text-emerald-600 mt-2">0</p>
+                            </div>
+                            <span class="text-xs text-slate-400 mt-4 block">Recompensas resgatadas</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONFIGURAR FOTO DE FUNDO -->
+                <div id="tab-config" class="hidden space-y-6">
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm max-w-xl">
+                        <h2 class="text-lg font-bold text-slate-800 mb-2">Personalizar Fundo do Cartão</h2>
+                        <p class="text-sm text-slate-500 mb-6">Suba uma foto de fundo para o cartão de fidelidade digital.</p>
+                        
+                        <div class="space-y-4 text-sm">
+                            <div>
+                                <label class="block font-medium text-slate-700 mb-2">Imagem de Fundo</label>
+                                <input type="file" id="input-fundo-cartao" accept="image/*" onchange="carregarImagemFundo(event)" class="w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-slate-800 file:text-white hover:file:bg-slate-700 cursor-pointer border border-slate-200 rounded-lg">
+                            </div>
+                            <div id="preview-container" class="hidden mt-4">
+                                <p class="font-medium text-slate-700 mb-2">Pré-visualização:</p>
+                                <div id="preview-fundo" class="w-full h-40 rounded-lg bg-cover bg-center border border-slate-200 shadow-inner"></div>
+                            </div>
+                            <button onclick="salvarFotoFundo()" class="bg-slate-800 hover:bg-slate-700 text-white px-5 py-2.5 rounded-lg font-medium transition mt-2">Salvar Alterações</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CAMPANHAS -->
+                <div id="tab-campanhas" class="hidden space-y-6">
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-lg font-bold text-slate-800">Gerenciar Campanhas</h2>
+                            <button onclick="abrirModalCampanha()" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                                <i class="fa-solid fa-plus mr-1.5"></i> Nova Campanha
+                            </button>
+                        </div>
+                        <div id="lista-campanhas" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                    </div>
+                </div>
+
+                <!-- VALIDADOR / CAIXA -->
+                <div id="tab-validador" class="hidden space-y-6">
+                    <div class="max-w-lg mx-auto space-y-6">
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-center gap-6">
+                            <div class="space-y-2 flex-1">
+                                <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-link text-slate-600 mr-2"></i> Link do Cartão do Cliente</h3>
+                                <div class="flex gap-2 pt-1">
+                                    <input type="text" id="input-link-cliente" readonly class="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-[11px] text-slate-600 w-full focus:outline-none">
+                                    <button onclick="copiarLinkCliente()" class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition shrink-0"><i class="fa-solid fa-copy"></i></button>
+                                </div>
+                            </div>
+                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex flex-col items-center justify-center shrink-0">
+                                <div id="qrcode-container" class="bg-white p-1 rounded border border-slate-200"></div>
+                                <span class="text-[9px] font-semibold text-slate-400 mt-1 uppercase">QR CODE</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                            <h2 class="text-lg font-bold text-slate-800 mb-2 text-center">Caixa / Validador de Selos</h2>
+                            <div class="space-y-4 text-sm">
+                                <div>
+                                    <label class="block font-medium text-slate-700 mb-1.5">Buscar por Telefone ou ID</label>
+                                    <div class="flex gap-2">
+                                        <input type="text" id="busca-cliente-input" oninput="buscarClienteCaixa()" placeholder="Ex: (11) 99999-9999 ou CLI-1" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 focus:outline-none focus:border-slate-500">
+                                    </div>
+                                </div>
+
+                                <div id="resultado-busca-container" class="hidden border border-slate-200 bg-slate-50 rounded-xl p-4 space-y-4">
+                                    <div class="flex justify-between items-center border-b border-slate-200 pb-3">
+                                        <div>
+                                            <h4 id="res-nome" class="font-bold text-slate-800 text-base">Nome</h4>
+                                            <p class="text-xs text-slate-500">ID: <span id="res-id">CLI-0</span> | Tel: <span id="res-tel"></span></p>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block font-medium text-slate-700 mb-1">Campanha</label>
+                                        <select id="res-campanha" onchange="mudarCampanhaCaixa(this.value)" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-800 focus:outline-none"></select>
+                                    </div>
+                                    <div class="bg-white p-3 rounded-lg border border-slate-200 space-y-2">
+                                        <div class="flex items-center justify-between">
+                                            <span class="font-medium text-slate-700">Selos:</span>
+                                            <span id="res-selos-qtd" class="text-xl font-bold text-amber-500">0 / 5 ⭐</span>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <button onclick="removerCarimboClienteExistente()" class="w-full bg-rose-50 hover:bg-rose-100 text-rose-700 py-2.5 rounded-lg font-medium transition text-xs border border-rose-100">Remover Selo</button>
+                                        <button onclick="adicionarCarimboClienteExistente()" class="w-full bg-slate-800 hover:bg-slate-700 text-white py-2.5 rounded-lg font-medium transition text-xs">Adicionar Carimbo ⭐</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BASE DE CLIENTES -->
+                <div id="tab-clientes" class="hidden space-y-6">
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-lg font-bold text-slate-800">Base de Clientes</h2>
+                            <span id="contador-registros" class="bg-slate-100 text-slate-600 text-xs font-semibold px-3 py-2 rounded-lg border">0 registros</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm text-slate-600">
+                                <thead class="bg-slate-100 text-xs uppercase text-slate-600 font-semibold">
+                                    <tr>
+                                        <th class="p-3.5">ID</th>
+                                        <th class="p-3.5">Nome</th>
+                                        <th class="p-3.5">WhatsApp</th>
+                                        <th class="p-3.5">Progresso</th>
+                                        <th class="p-3.5 text-right">Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabela-clientes-corpo"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
         </div>
     </div>
 
-    <!-- PAINEL ADMIN -->
-    <div id="app-admin-view" class="hidden flex h-screen bg-slate-50">
-        <div class="p-8 w-full text-center">
-            <h1 class="text-2xl font-bold text-slate-800">Painel Administrativo Policar</h1>
-            <button onclick="logoutAdmin()" class="mt-4 bg-red-600 text-white px-4 py-2 rounded">Sair</button>
+    <!-- MODAL CAMPANHA -->
+    <div id="modal-campanha" class="fixed inset-0 bg-black/40 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-lg border">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">Gerenciar Campanha</h3>
+            <form id="form-campanha" onsubmit="salvarCampanha(event)" class="space-y-4 text-sm">
+                <input type="hidden" id="campanha-index">
+                <input type="text" id="campanha-nome" required placeholder="Nome da Campanha" class="w-full border rounded-lg px-4 py-2.5">
+                <input type="text" id="campanha-premio" required placeholder="Prêmio" class="w-full border rounded-lg px-4 py-2.5">
+                <input type="number" id="campanha-selos" required value="5" class="w-full border rounded-lg px-4 py-2.5">
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="fecharModalCampanha()" class="px-4 py-2 border rounded-lg">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-slate-800 text-white rounded-lg">Salvar</button>
+                </div>
+            </form>
         </div>
     </div>
 
     <script>
         const USER_HASH = "cG9saWNhcg=="; 
         const PASS_HASH = "MTAyMDMw"; 
-        
+        let tentativasFalhas = parseInt(localStorage.getItem('policar_bloqueio') || '0');
+
+        let campanhas = JSON.parse(localStorage.getItem('fidelidade_campanhas')) || [
+            { nome: 'Combo de Lavagem', premio: '1 Ducha Completa Grátis', selos: 5, validadeDias: '180' }
+        ];
+        let imagemFundoSalva = localStorage.getItem('fidelidade_fundo') || '';
+        let clientes = JSON.parse(localStorage.getItem('fidelidade_clientes')) || [];
+        let clienteEncontradoAtualId = null;
+        let telefoneClienteAtual = null;
+
         window.addEventListener('DOMContentLoaded', () => {
-            // FORÇA ATUALIZAÇÃO DE CACHE
-            if (localStorage.getItem('fidelidade_versao') !== '1.1') {
-                localStorage.clear();
-                localStorage.setItem('fidelidade_versao', '1.1');
+            if (localStorage.getItem('fidelidade_versao') !== '1.2') {
+                localStorage.setItem('fidelidade_versao', '1.2');
                 location.reload();
             }
 
             const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('cliente') === 'ver') {
+            const modoCliente = urlParams.get('cliente');
+            const telParam = urlParams.get('tel');
+            const clienteLogadoTel = localStorage.getItem('fidelidade_cliente_logado');
+
+            if (modoCliente === 'ver') {
+                document.getElementById('login-admin-view').classList.add('hidden');
+                document.getElementById('app-admin-view').classList.add('hidden');
                 document.getElementById('app-cliente-view').classList.remove('hidden');
-            } else if (localStorage.getItem('admin_policar_autenticado') === 'true') {
-                document.getElementById('app-admin-view').classList.remove('hidden');
+
+                const telAlvo = telParam || clienteLogadoTel;
+                if (telAlvo) {
+                    telefoneClienteAtual = telAlvo;
+                    localStorage.setItem('fidelidade_cliente_logado', telAlvo);
+                    carregarCartaoClienteLogado(telAlvo);
+                } else {
+                    document.getElementById('cliente-tela-cadastro').classList.remove('hidden');
+                    document.getElementById('cliente-tela-cartao').classList.add('hidden');
+                }
             } else {
-                document.getElementById('login-admin-view').classList.remove('hidden');
+                document.getElementById('app-cliente-view').classList.add('hidden');
+                if (localStorage.getItem('admin_policar_autenticado') === 'true') {
+                    document.getElementById('login-admin-view').classList.add('hidden');
+                    document.getElementById('app-admin-view').classList.remove('hidden');
+                    gerarLinkEQRCode();
+                    atualizarSistema();
+                } else {
+                    document.getElementById('login-admin-view').classList.remove('hidden');
+                    document.getElementById('app-admin-view').classList.add('hidden');
+                }
             }
         });
 
@@ -100,9 +420,265 @@
             location.reload();
         }
 
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+        }
+
+        function switchTab(tabId) {
+            ['dashboard', 'config', 'campanhas', 'validador', 'clientes'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+            });
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            if (window.innerWidth < 768) toggleSidebar();
+        }
+
+        function gerarLinkEQRCode() {
+            const urlBase = window.location.href.split('?')[0];
+            const linkCliente = `${urlBase}?cliente=ver`;
+            document.getElementById('input-link-cliente').value = linkCliente;
+            const qr = document.getElementById('qrcode-container');
+            qr.innerHTML = '';
+            new QRCode(qr, { text: linkCliente, width: 100, height: 100 });
+        }
+
+        function copiarLinkCliente() {
+            navigator.clipboard.writeText(document.getElementById('input-link-cliente').value);
+            alert('Link copiado!');
+        }
+
+        function gerarProximoIdCliente() {
+            clientes = JSON.parse(localStorage.getItem('fidelidade_clientes')) || [];
+            let maiorNum = 0;
+            clientes.forEach(c => {
+                if (c.id && c.id.startsWith('CLI-')) {
+                    let num = parseInt(c.id.replace('CLI-', ''));
+                    if (num > maiorNum) maiorNum = num;
+                }
+            });
+            return `CLI-${maiorNum + 1}`;
+        }
+
+        function cadastrarClienteFinal(event) {
+            event.preventDefault();
+            const nome = document.getElementById('cli-cad-nome').value.trim();
+            const telefone = document.getElementById('cli-cad-tel').value.trim();
+            const aniversario = document.getElementById('cli-cad-aniversario').value;
+
+            clientes = JSON.parse(localStorage.getItem('fidelidade_clientes')) || [];
+            let cli = clientes.find(c => c.telefone === telefone);
+            if (!cli) {
+                cli = {
+                    id: gerarProximoIdCliente(),
+                    nome: nome,
+                    telefone: telefone,
+                    aniversario: aniversario || '',
+                    campanhaIndex: 0,
+                    progressoCampanhas: {},
+                    premiosResgatados: 0
+                };
+                clientes.push(cli);
+                localStorage.setItem('fidelidade_clientes', JSON.stringify(clientes));
+            }
+
+            telefoneClienteAtual = telefone;
+            localStorage.setItem('fidelidade_cliente_logado', telefone);
+            window.history.replaceState({}, '', `?cliente=ver&tel=${telefone}`);
+            carregarCartaoClienteLogado(telefone);
+        }
+
+        function carregarCartaoClienteLogado(telefone) {
+            clientes = JSON.parse(localStorage.getItem('fidelidade_clientes')) || [];
+            let cli = clientes.find(c => c.telefone === telefone);
+            if (!cli) return;
+
+            document.getElementById('cliente-tela-cadastro').classList.add('hidden');
+            document.getElementById('cliente-tela-cartao').classList.remove('hidden');
+
+            const campIdx = cli.campanhaIndex || 0;
+            const camp = campanhas[campIdx] || campanhas[0];
+            if (!cli.progressoCampanhas[campIdx]) cli.progressoCampanhas[campIdx] = { selos: 0, historicoSelos: [] };
+            const prog = cli.progressoCampanhas[campIdx];
+
+            document.getElementById('cartao-id-badge').innerText = cli.id;
+            document.getElementById('cartao-nome-cliente').innerText = cli.nome;
+            document.getElementById('cartao-progresso-texto').innerText = `${prog.selos} de ${camp.selos} selos`;
+
+            if (imagemFundoSalva) {
+                document.getElementById('cartao-fundo-banner').style.backgroundImage = `url('${imagemFundoSalva}')`;
+            }
+
+            const grid = document.getElementById('cartao-grid-selos');
+            grid.innerHTML = '';
+            for (let i = 1; i <= camp.selos; i++) {
+                let preenchido = i <= prog.selos;
+                grid.innerHTML += `<div class="h-14 rounded-xl border-2 ${preenchido ? 'border-amber-400 bg-amber-50 text-amber-500' : 'border-slate-200 bg-white text-slate-300'} flex items-center justify-center text-lg font-bold"><i class="fa-solid fa-star"></i></div>`;
+            }
+
+            const selectCamp = document.getElementById('cliente-mudar-campanha');
+            if(selectCamp) {
+                selectCamp.innerHTML = '';
+                campanhas.forEach((c, idx) => {
+                    selectCamp.innerHTML += `<option value="${idx}" ${idx === campIdx ? 'selected' : ''}>${c.nome}</option>`;
+                });
+            }
+        }
+
+        function mudarCampanhaClienteVisualizacao(val) {
+            clientes = JSON.parse(localStorage.getItem('fidelidade_clientes')) || [];
+            let cli = clientes.find(c => c.telefone === telefoneClienteAtual);
+            if (cli) {
+                cli.campanhaIndex = parseInt(val);
+                localStorage.setItem('fidelidade_clientes', JSON.stringify(clientes));
+                carregarCartaoClienteLogado(telefoneClienteAtual);
+            }
+        }
+
         function sairContaCliente() {
             localStorage.removeItem('fidelidade_cliente_logado');
-            location.reload();
+            window.location.href = window.location.pathname + '?cliente=ver';
+        }
+
+        function carregarImagemFundo(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    imagemFundoSalva = evt.target.result;
+                    document.getElementById('preview-fundo').style.backgroundImage = `url('${imagemFundoSalva}')`;
+                    document.getElementById('preview-container').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function salvarFotoFundo() {
+            if (imagemFundoSalva) {
+                localStorage.setItem('fidelidade_fundo', imagemFundoSalva);
+                alert('Fundo salvo!');
+            }
+        }
+
+        function abrirModalCampanha() { document.getElementById('modal-campanha').classList.remove('hidden'); }
+        function fecharModalCampanha() { document.getElementById('modal-campanha').classList.add('hidden'); }
+        function salvarCampanha(e) {
+            e.preventDefault();
+            const nome = document.getElementById('campanha-nome').value;
+            const premio = document.getElementById('campanha-premio').value;
+            const selos = parseInt(document.getElementById('campanha-selos').value);
+            campanhas.push({ nome, premio, selos });
+            localStorage.setItem('fidelidade_campanhas', JSON.stringify(campanhas));
+            fecharModalCampanha();
+            atualizarSistema();
+        }
+
+        function buscarClienteCaixa() {
+            const termo = document.getElementById('busca-cliente-input').value.trim().toLowerCase();
+            const container = document.getElementById('resultado-busca-container');
+            if (!termo) { container.classList.add('hidden'); return; }
+
+            clientes = JSON.parse(localStorage.getItem('fidelidade_clientes')) || [];
+            let cli = clientes.find(c => c.telefone.toLowerCase().includes(termo) || c.id.toLowerCase() === termo || c.nome.toLowerCase().includes(termo));
+            if (cli) {
+                clienteEncontradoAtualId = cli.id;
+                container.classList.remove('hidden');
+                document.getElementById('res-nome').innerText = cli.nome;
+                document.getElementById('res-id').innerText = cli.id;
+                document.getElementById('res-tel').innerText = cli.telefone;
+                
+                const sel = document.getElementById('res-campanha');
+                sel.innerHTML = '';
+                campanhas.forEach((c, idx) => {
+                    sel.innerHTML += `<option value="${idx}" ${idx === (cli.campanhaIndex||0) ? 'selected' : ''}>${c.nome}</option>`;
+                });
+                atualizarSelosCaixa(cli);
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        function atualizarSelosCaixa(cli) {
+            const campIdx = cli.campanhaIndex || 0;
+            const camp = campanhas[campIdx] || campanhas[0];
+            if (!cli.progressoCampanhas) cli.progressoCampanhas = {};
+            if (!cli.progressoCampanhas[campIdx]) cli.progressoCampanhas[campIdx] = { selos: 0, historicoSelos: [] };
+            document.getElementById('res-selos-qtd').innerText = `${cli.progressoCampanhas[campIdx].selos} / ${camp.selos} ⭐`;
+        }
+
+        function mudarCampanhaCaixa(val) {
+            clientes = JSON.parse(localStorage.getItem('fidelidade_clientes')) || [];
+            let cli = clientes.find(c => c.id === clienteEncontradoAtualId);
+            if(cli) {
+                cli.campanhaIndex = parseInt(val);
+                localStorage.setItem('fidelidade_clientes', JSON.stringify(clientes));
+                atualizarSelosCaixa(cli);
+            }
+        }
+
+        function adicionarCarimboClienteExistente() {
+            clientes = JSON.parse(localStorage.getItem('fidelidade_clientes')) || [];
+            let cli = clientes.find(c => c.id === clienteEncontradoAtualId);
+            if (!cli) return;
+            const campIdx = cli.campanhaIndex || 0;
+            const camp = campanhas[campIdx];
+            if(!cli.progressoCampanhas[campIdx]) cli.progressoCampanhas[campIdx] = { selos: 0, historicoSelos: [] };
+            
+            cli.progressoCampanhas[campIdx].selos += 1;
+            if (cli.progressoCampanhas[campIdx].selos >= camp.selos) {
+                cli.premiosResgatados = (cli.premiosResgatados || 0) + 1;
+                cli.progressoCampanhas[campIdx].selos = 0;
+                alert(`Meta atingida! Prêmio: ${camp.premio}`);
+            } else {
+                alert('Carimbo adicionado!');
+            }
+            localStorage.setItem('fidelidade_clientes', JSON.stringify(clientes));
+            buscarClienteCaixa();
+            atualizarSistema();
+        }
+
+        function removerCarimboClienteExistente() {
+            clientes = JSON.parse(localStorage.getItem('fidelidade_clientes')) || [];
+            let cli = clientes.find(c => c.id === clienteEncontradoAtualId);
+            if (!cli) return;
+            const campIdx = cli.campanhaIndex || 0;
+            if(cli.progressoCampanhas[campIdx] && cli.progressoCampanhas[campIdx].selos > 0) {
+                cli.progressoCampanhas[campIdx].selos -= 1;
+                localStorage.setItem('fidelidade_clientes', JSON.stringify(clientes));
+                buscarClienteCaixa();
+                atualizarSistema();
+                alert('Selo removido!');
+            }
+        }
+
+        function atualizarSistema() {
+            clientes = JSON.parse(localStorage.getItem('fidelidade_clientes')) || [];
+            document.getElementById('metric-clientes').innerText = clientes.length;
+            
+            let totalSelos = 0, totalPremios = 0;
+            clientes.forEach(c => {
+                totalPremios += (c.premiosResgatados || 0);
+                if (c.progressoCampanhas) {
+                    for (let k in c.progressoCampanhas) totalSelos += (c.progressoCampanhas[k].selos || 0);
+                }
+            });
+            document.getElementById('metric-selos').innerText = totalSelos;
+            document.getElementById('metric-premios').innerText = totalPremios;
+
+            const listaC = document.getElementById('lista-campanhas');
+            if(listaC) {
+                listaC.innerHTML = '';
+                campanhas.forEach((c, idx) => {
+                    listaC.innerHTML += `<div class="p-4 bg-slate-50 border rounded-lg flex justify-between items-center"><div><h4 class="font-bold">${c.nome}</h4><p class="text-xs text-slate-500">Prêmio: ${c.premio} (${c.selos} selos)</p></div></div>`;
+                });
+            }
+
+            const corpoT = document.getElementById('tabela-clientes-corpo');
+            if(corpoT) {
+                corpoT.innerHTML = '';
+                clientes.forEach(cli => {
+                    corpoT.innerHTML += `<tr class="border-b"><td class="p-3 font-bold">${cli.id}</td><td class="p-3">${cli.nome}</td><td class="p-3">${cli.telefone}</td><td class="p-3">Ativo</td><td class="p-3 text-right"><a href="?cliente=ver&tel=${cli.telefone}" target="_blank" class="bg-slate-800 text-white px-3 py-1 rounded text-xs">Ver</a></td></tr>`;
+                });
+                document.getElementById('contador-registros').innerText = `${clientes.length} registros`;
+            }
         }
     </script>
 </body>
