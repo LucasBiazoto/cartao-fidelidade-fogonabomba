@@ -31,8 +31,6 @@
 
     <!-- TELA EXTERNA DO CLIENTE -->
     <div id="app-cliente-view" class="hidden min-h-screen bg-slate-100 flex items-center justify-center p-4">
-        
-        <!-- Cadastro Inicial -->
         <div id="cliente-tela-cadastro" class="max-w-md w-full bg-white rounded-2xl border border-slate-200 shadow-sm p-8 space-y-6">
             <div class="text-center space-y-2">
                 <div class="w-12 h-12 bg-slate-800 text-white rounded-xl mx-auto flex items-center justify-center text-xl font-bold">
@@ -61,7 +59,6 @@
             </form>
         </div>
 
-        <!-- Cartão do Cliente -->
         <div id="cliente-tela-cartao" class="hidden max-w-md w-full bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden space-y-3 relative pb-5">
             <div id="cartao-fundo-banner" class="h-56 bg-slate-900 bg-cover bg-center p-4 flex justify-between items-start text-white relative">
                 <div class="absolute inset-0 bg-black/10"></div>
@@ -149,7 +146,7 @@
                     <div class="bg-white p-6 rounded-xl border shadow-sm">
                         <div class="flex justify-between items-center mb-6">
                             <h2 class="text-lg font-bold text-slate-800">Campanhas</h2>
-                            <button onclick="abrirModalCampanha()" class="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm"><i class="fa-solid fa-plus mr-1"></i> Nova</button>
+                            <button onclick="abrirModalCampanha()" class="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm"><i class="fa-solid fa-plus mr-1"></i> Nova Campanha</button>
                         </div>
                         <div id="lista-campanhas" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
                     </div>
@@ -175,7 +172,12 @@
                         <div class="bg-white p-6 rounded-xl border shadow-sm">
                             <h2 class="text-lg font-bold text-slate-800 mb-4 text-center">Caixa / Validador de Selos</h2>
                             <div class="space-y-4 text-sm">
-                                <input type="text" id="busca-cliente-input" oninput="buscarClienteCaixa()" placeholder="Digite o WhatsApp ou ID (ex: 11984681343 ou CLI-1)" class="w-full bg-slate-50 border rounded-lg px-4 py-2.5 focus:outline-none">
+                                <div class="flex gap-2">
+                                    <input type="text" id="busca-cliente-input" placeholder="Digite WhatsApp ou ID (ex: 11984681343 ou CLI-1)" class="w-full bg-slate-50 border rounded-lg px-4 py-2.5 focus:outline-none">
+                                    <button onclick="buscarClienteCaixa()" class="bg-slate-800 text-white px-5 py-2.5 rounded-lg font-medium transition">
+                                        <i class="fa-solid fa-search"></i>
+                                    </button>
+                                </div>
 
                                 <div id="resultado-busca-container" class="hidden border bg-slate-50 rounded-xl p-4 space-y-4">
                                     <div class="flex justify-between items-center border-b pb-3">
@@ -205,11 +207,17 @@
                 <!-- BASE DE CLIENTES -->
                 <div id="tab-clientes" class="hidden space-y-6">
                     <div class="bg-white p-6 rounded-xl border shadow-sm space-y-4">
-                        <div class="flex justify-between items-center"><h2 class="text-lg font-bold">Clientes</h2><span id="contador-registros" class="bg-slate-100 text-xs px-3 py-1.5 rounded">0 registros</span></div>
+                        <div class="flex justify-between items-center"><h2 class="text-lg font-bold">Base de Clientes</h2><span id="contador-registros" class="bg-slate-100 text-xs px-3 py-1.5 rounded">0 registros</span></div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left text-sm text-slate-600">
                                 <thead class="bg-slate-100 text-xs uppercase">
-                                    <tr><th class="p-3">ID</th><th class="p-3">Nome</th><th class="p-3">WhatsApp</th><th class="p-3 text-right">Ação</th></tr>
+                                    <tr>
+                                        <th class="p-3">ID</th>
+                                        <th class="p-3">Nome</th>
+                                        <th class="p-3">WhatsApp</th>
+                                        <th class="p-3">Progresso</th>
+                                        <th class="p-3 text-right">Ação / WhatsApp</th>
+                                    </tr>
                                 </thead>
                                 <tbody id="tabela-clientes-corpo"></tbody>
                             </table>
@@ -223,12 +231,25 @@
     <!-- MODAL CAMPANHA -->
     <div id="modal-campanha" class="fixed inset-0 bg-black/40 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-lg border space-y-4">
-            <h3 class="text-lg font-bold">Nova Campanha</h3>
+            <h3 id="modal-campanha-titulo" class="text-lg font-bold">Nova Campanha</h3>
             <form onsubmit="salvarCampanha(event)" class="space-y-3 text-sm">
-                <input type="text" id="campanha-nome" required placeholder="Nome" class="w-full border rounded-lg p-2.5">
-                <input type="text" id="campanha-premio" required placeholder="Prêmio" class="w-full border rounded-lg p-2.5">
-                <input type="number" id="campanha-selos" required value="5" class="w-full border rounded-lg p-2.5">
-                <div class="flex justify-end gap-2"><button type="button" onclick="fecharModalCampanha()" class="px-4 py-2 border rounded">Cancelar</button><button type="submit" class="px-4 py-2 bg-slate-800 text-white rounded">Salvar</button></div>
+                <input type="hidden" id="campanha-index">
+                <div>
+                    <label class="block font-medium text-slate-700 mb-1">Nome da Campanha</label>
+                    <input type="text" id="campanha-nome" required placeholder="Ex: Combo de Lavagem" class="w-full border rounded-lg p-2.5">
+                </div>
+                <div>
+                    <label class="block font-medium text-slate-700 mb-1">Descrição do Prêmio</label>
+                    <input type="text" id="campanha-premio" required placeholder="Ex: 1 Ducha Completa Grátis" class="w-full border rounded-lg p-2.5">
+                </div>
+                <div>
+                    <label class="block font-medium text-slate-700 mb-1">Quantidade de Selos</label>
+                    <input type="number" id="campanha-selos" required value="5" min="1" class="w-full border rounded-lg p-2.5">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="fecharModalCampanha()" class="px-4 py-2 border rounded">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-slate-800 text-white rounded">Salvar</button>
+                </div>
             </form>
         </div>
     </div>
@@ -414,17 +435,49 @@
             }
         }
 
-        function abrirModalCampanha() { document.getElementById('modal-campanha').classList.remove('hidden'); }
+        function abrirModalCampanha(index = null) {
+            document.getElementById('modal-campanha').classList.remove('hidden');
+            if (index !== null) {
+                document.getElementById('modal-campanha-titulo').innerText = 'Editar Campanha';
+                document.getElementById('campanha-index').value = index;
+                document.getElementById('campanha-nome').value = campanhas[index].nome;
+                document.getElementById('campanha-premio').value = campanhas[index].premio;
+                document.getElementById('campanha-selos').value = campanhas[index].selos;
+            } else {
+                document.getElementById('modal-campanha-titulo').innerText = 'Nova Campanha';
+                document.getElementById('campanha-index').value = '';
+                document.getElementById('campanha-nome').value = '';
+                document.getElementById('campanha-premio').value = '';
+                document.getElementById('campanha-selos').value = 5;
+            }
+        }
+
         function fecharModalCampanha() { document.getElementById('modal-campanha').classList.add('hidden'); }
+        
         function salvarCampanha(e) {
             e.preventDefault();
+            const index = document.getElementById('campanha-index').value;
             const nome = document.getElementById('campanha-nome').value;
             const premio = document.getElementById('campanha-premio').value;
             const selos = parseInt(document.getElementById('campanha-selos').value);
-            campanhas.push({ nome, premio, selos });
+
+            if (index === '') {
+                campanhas.push({ nome, premio, selos });
+            } else {
+                campanhas[index] = { nome, premio, selos };
+            }
+
             localStorage.setItem('fidelidade_campanhas', JSON.stringify(campanhas));
             fecharModalCampanha();
             atualizarSistema();
+        }
+
+        function excluirCampanha(index) {
+            if (confirm('Deseja excluir esta campanha?')) {
+                campanhas.splice(index, 1);
+                localStorage.setItem('fidelidade_campanhas', JSON.stringify(campanhas));
+                atualizarSistema();
+            }
         }
 
         function buscarClienteCaixa() {
@@ -455,6 +508,7 @@
                 atualizarSelosCaixa(cli);
             } else {
                 container.classList.add('hidden');
+                alert('Cliente não encontrado.');
             }
         }
 
@@ -529,15 +583,42 @@
             if(listaC) {
                 listaC.innerHTML = '';
                 campanhas.forEach((c, idx) => {
-                    listaC.innerHTML += `<div class="p-4 bg-slate-50 border rounded-lg flex justify-between items-center"><div><h4 class="font-bold">${c.nome}</h4><p class="text-xs text-slate-500">Prêmio: ${c.premio} (${c.selos} selos)</p></div></div>`;
+                    listaC.innerHTML += `
+                        <div class="p-4 bg-slate-50 border rounded-lg flex justify-between items-center">
+                            <div>
+                                <h4 class="font-bold">${c.nome}</h4>
+                                <p class="text-xs text-slate-500">Prêmio: ${c.premio} (${c.selos} selos)</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="abrirModalCampanha(${idx})" class="p-2 bg-white border rounded text-slate-600 hover:bg-slate-100" title="Editar"><i class="fa-solid fa-pen text-sm"></i></button>
+                                <button onclick="excluirCampanha(${idx})" class="p-2 bg-white border rounded text-rose-600 hover:bg-rose-50" title="Excluir"><i class="fa-solid fa-trash text-sm"></i></button>
+                            </div>
+                        </div>`;
                 });
             }
 
             const corpoT = document.getElementById('tabela-clientes-corpo');
             if(corpoT) {
                 corpoT.innerHTML = '';
+                const urlBase = window.location.href.split('?')[0].split('#')[0];
                 clientes.forEach(cli => {
-                    corpoT.innerHTML += `<tr class="border-b"><td class="p-3 font-bold">${cli.id}</td><td class="p-3">${cli.nome}</td><td class="p-3">${cli.telefone}</td><td class="p-3 text-right"><a href="?cliente=ver&tel=${cli.telefone}" target="_blank" class="bg-slate-800 text-white px-3 py-1 rounded text-xs">Ver</a></td></tr>`;
+                    const campIdx = cli.campanhaIndex || 0;
+                    const camp = campanhas[campIdx] || campanhas[0];
+                    const prog = cli.progressoCampanhas && cli.progressoCampanhas[campIdx] ? cli.progressoCampanhas[campIdx].selos : 0;
+                    const linkCartao = `${urlBase}?cliente=ver&tel=${cli.telefone}`;
+                    const msgZap = `Olá ${cli.nome}, acesse seu cartão fidelidade Policar aqui: ${linkCartao}`;
+
+                    corpoT.innerHTML += `
+                        <tr class="border-b hover:bg-slate-50">
+                            <td class="p-3 font-bold">${cli.id}</td>
+                            <td class="p-3">${cli.nome}</td>
+                            <td class="p-3">${cli.telefone}</td>
+                            <td class="p-3">${prog} / ${camp.selos} ⭐</td>
+                            <td class="p-3 text-right space-x-1">
+                                <a href="?cliente=ver&tel=${cli.telefone}" target="_blank" class="bg-white border text-slate-700 px-2.5 py-1.5 rounded text-xs" title="Ver Cartão"><i class="fa-solid fa-eye"></i></a>
+                                <a href="https://wa.me/55${cli.telefone.replace(/\D/g, '')}?text=${encodeURIComponent(msgZap)}" target="_blank" class="bg-emerald-600 text-white px-2.5 py-1.5 rounded text-xs inline-flex items-center gap-1" title="Enviar WhatsApp"><i class="fa-brands fa-whatsapp"></i> Zap</a>
+                            </td>
+                        </tr>`;
                 });
                 document.getElementById('contador-registros').innerText = `${clientes.length} registros`;
             }
