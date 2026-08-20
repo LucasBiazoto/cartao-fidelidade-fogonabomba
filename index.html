@@ -488,14 +488,32 @@
             window.location.href = window.location.pathname + '?cliente=ver';
         };
 
+        // COMPRESSOR AUTOMÁTICO DE IMAGEM PARA EVITAR O ERRO DO FIREBASE
         window.carregarImagemFundo = function(e) {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = (evt) => {
-                    imagemFundoSalva = evt.target.result;
-                    document.getElementById('preview-fundo').style.backgroundImage = `url('${imagemFundoSalva}')`;
-                    document.getElementById('preview-container').classList.remove('hidden');
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        const maxW = 800;
+                        if (width > maxW) {
+                            height = Math.round((height * maxW) / width);
+                            width = maxW;
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        imagemFundoSalva = canvas.toDataURL('image/jpeg', 0.7);
+                        document.getElementById('preview-fundo').style.backgroundImage = `url('${imagemFundoSalva}')`;
+                        document.getElementById('preview-container').classList.remove('hidden');
+                    };
+                    img.src = evt.target.result;
                 };
                 reader.readAsDataURL(file);
             }
@@ -503,10 +521,15 @@
 
         window.salvarFotoFundo = async function() {
             if (imagemFundoSalva) {
-                await setDoc(doc(db, "config", "fundo"), { url: imagemFundoSalva });
-                const banner = document.getElementById('cartao-fundo-banner');
-                if(banner) banner.style.backgroundImage = `url('${imagemFundoSalva}')`;
-                alert('Fundo salvo na nuvem com sucesso!');
+                try {
+                    await setDoc(doc(db, "config", "fundo"), { url: imagemFundoSalva });
+                    const banner = document.getElementById('cartao-fundo-banner');
+                    if(banner) banner.style.backgroundImage = `url('${imagemFundoSalva}')`;
+                    alert('Fundo salvo na nuvem com sucesso!');
+                } catch (err) {
+                    alert('Erro ao salvar imagem. Tente uma imagem mais leve.');
+                    console.error(err);
+                }
             }
         };
 
