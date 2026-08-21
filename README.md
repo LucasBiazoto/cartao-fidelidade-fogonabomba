@@ -1,6 +1,6 @@
-# 🚗 Policar Digital Loyalty Card
+# 🚗 Tabaria e Adega Fogo na Bomba - Digital Loyalty Card
 
-A digital loyalty card web system tailored for the automotive detailing and car wash industry. Designed to replace paper loyalty cards, automate customer retention, and streamline store management.
+A digital loyalty card web system tailored for the beverage and convenience store industry. Designed to replace paper loyalty cards, automate customer retention, and streamline store management.
 
 ## ✨ Features
 * **Secured Admin Dashboard:** Complete management of campaigns, rewards, and customer database.
@@ -12,15 +12,14 @@ A digital loyalty card web system tailored for the automotive detailing and car 
 ## 🛠️ Tech Stack
 * HTML5 / CSS3 (Tailwind CSS)
 * Vanilla JavaScript
-* LocalStorage (Lightweight data persistence)
+* Firebase Firestore (Cloud database persistence)
 * QRCode.js / FontAwesome
 
+---
 
+# 🚗 Tabaria e Adega Fogo na Bomba - Fidelidade Digital
 
-
-# 🚗 Policar Fidelidade Digital
-
-Sistema web de cartão fidelidade digital voltado para o setor de estética automotiva (lava-rápido e polimento). Desenvolvido para eliminar o uso de cartões de papel, fidelizar clientes de forma automatizada e facilitar o controle do lojista.
+Sistema web de cartão fidelidade digital voltado para o setor de tabaria e adega. Desenvolvido para eliminar o uso de cartões de papel, fidelizar clientes de forma automatizada e facilitar o controle do lojista.
 
 ## ✨ Funcionalidades
 * **Painel Administrativo Protegido:** Gestão completa de campanhas, prêmios e visualização da base de clientes.
@@ -32,5 +31,5 @@ Sistema web de cartão fidelidade digital voltado para o setor de estética auto
 ## 🛠️ Tecnologias Utilizadas
 * HTML5 / CSS3 (Tailwind CSS)
 * JavaScript Puro (Vanilla JS)
-* LocalStorage (Persistência leve de dados)
+* Firebase Firestore (Persistência de dados em nuvem)
 * QRCode.js / FontAwesome

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Policar - Painel Administrativo</title>
+    <title>fogo na bomba - Painel Administrativo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -22,7 +22,7 @@
             <div class="w-12 h-12 bg-slate-800 text-white rounded-full mx-auto flex items-center justify-center text-xl">
                 <i class="fa-solid fa-lock"></i>
             </div>
-            <h2 class="font-bold text-slate-800 text-base">Acesso Policar</h2>
+            <h2 class="font-bold text-slate-800 text-base">Acesso - Fogo na Bomba</h2>
             <input type="text" id="admin-user" placeholder="Usuário" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm text-center focus:outline-none focus:border-slate-500">
             <input type="password" id="admin-pass" placeholder="Senha" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm text-center focus:outline-none focus:border-slate-500">
             <button onclick="verificarLogin()" class="w-full bg-slate-800 hover:bg-slate-700 text-white py-2.5 rounded-lg text-sm font-medium transition shadow-sm">Entrar no Painel</button>
@@ -36,7 +36,7 @@
                 <div class="w-12 h-12 bg-slate-800 text-white rounded-xl mx-auto flex items-center justify-center text-xl font-bold">
                     <i class="fa-solid fa-car"></i>
                 </div>
-                <h2 class="text-xl font-bold text-slate-900">Policar Fidelidade</h2>
+                <h2 class="text-xl font-bold text-slate-900">Fogo na Bomba - Fidelidade</h2>
                 <p class="text-sm text-slate-500">Informe seus dados para acessar seu cartão e acumular carimbos.</p>
             </div>
 
@@ -109,7 +109,7 @@
     <div id="app-admin-view" class="hidden flex h-screen overflow-hidden bg-slate-50 w-full">
         <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 shadow-sm transform -translate-x-full transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:inset-auto flex flex-col">
             <div class="flex items-center justify-between h-16 px-6 border-b border-slate-200">
-                <span class="text-base font-bold text-slate-800 tracking-wide">Policar Fidelidade</span>
+                <span class="text-base font-bold text-slate-800 tracking-wide">Fogo na Bomba</span>
                 <button onclick="toggleSidebar()" class="md:hidden text-slate-500 hover:text-slate-800"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <nav class="p-4 space-y-1.5 flex-1">
@@ -127,13 +127,13 @@
         <div class="flex flex-col flex-1 h-full overflow-hidden">
             <header class="flex items-center justify-between h-16 px-6 bg-white border-b border-slate-200 md:hidden">
                 <button onclick="toggleSidebar()" class="text-slate-600"><i class="fa-solid fa-bars text-xl"></i></button>
-                <span class="font-bold text-slate-800 text-sm">Policar Administrativo</span>
+                <span class="font-bold text-slate-800 text-sm">Administrativo - Fogo na Bomba</span>
                 <div class="w-6"></div>
             </header>
 
             <main class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
                 <div id="tab-dashboard" class="space-y-6">
-                    <div class="bg-white p-6 rounded-xl border shadow-sm"><h1 class="text-xl md:text-2xl font-bold text-slate-800">Painel de Controle - Policar 📊</h1></div>
+                    <div class="bg-white p-6 rounded-xl border shadow-sm"><h1 class="text-xl md:text-2xl font-bold text-slate-800">Painel de Controle - Fogo na Bomba 📊</h1></div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                         <div class="bg-white p-6 rounded-xl border shadow-sm"><h3 class="text-slate-400 text-xs font-semibold uppercase">CLIENTES</h3><p id="metric-clientes" class="text-3xl font-bold mt-2">0</p></div>
                         <div class="bg-white p-6 rounded-xl border shadow-sm"><h3 class="text-slate-400 text-xs font-semibold uppercase">SELOS ⭐</h3><p id="metric-selos" class="text-3xl font-bold text-amber-500 mt-2">0</p></div>
@@ -257,22 +257,21 @@
         import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyCh-eeItbA2W-jzpYBmoyEd-B0rj9N73YY",
-            authDomain: "cartao-fidelidade-policar.firebaseapp.com",
-            projectId: "cartao-fidelidade-policar",
-            storageBucket: "cartao-fidelidade-policar.firebasestorage.app",
-            messagingSenderId: "585423896003",
-            appId: "1:585423896003:web:7cf61df40a228b088e9176",
-            measurementId: "G-6SNN3WCV35"
+            apiKey: "AIzaSyCp1djqZPCzwwl4YFPjM5ckz8zmPtzYCYQ",
+            authDomain: "cartao-fidelidade-fogonabomba.firebaseapp.com",
+            projectId: "cartao-fidelidade-fogonabomba",
+            storageBucket: "cartao-fidelidade-fogonabomba.firebasestorage.app",
+            messagingSenderId: "224915478520",
+            appId: "1:224915478520:web:d3f163c207d5411ad7e80d"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const USER_HASH = "cG9saWNhcg=="; 
-        const PASS_HASH = "MTAyMDMw"; 
+        const USER_HASH = "Zm9nbyBuYSBib21iYQ=="; 
+        const PASS_HASH = "MTAyMDMwNDA="; 
         
-        let campanhas = [{ nome: 'Combo de Lavagem', premio: '1 Ducha Completa Grátis', selos: 5 }];
+        let campanhas = [{ nome: 'Combo de Lavagem', premio: '1 Ducha Completa Grátis (válido de segunda a sexta-feira)', selos: 5 }];
         let imagemFundoSalva = '';
         let clientes = [];
         let clienteEncontradoAtualId = null;
@@ -754,7 +753,7 @@
                 if (campVal !== 'todas' && campVal !== 'falta1' && campVal !== 'falta2' && campVal !== 'falta3' && campIdx.toString() !== campVal) return;
 
                 const linkCartao = `${urlBase}?cliente=ver&tel=${cli.telefone}`;
-                let msgZap = `Olá ${cli.nome}! Passando para lembrar que faltam apenas *${faltam} ${faltam === 1 ? 'selo' : 'selos'}* para você resgatar o seu prêmio (*${camp.premio}*) aqui na Policar! Venha nos visitar hoje e garantir o seu carimbo. ⭐🚗\n\nAcesse seu cartão: ${linkCartao}`;
+                let msgZap = `Olá ${cli.nome}! Passando para lembrar que faltam apenas *${faltam} ${faltam === 1 ? 'selo' : 'selos'}* para você resgatar o seu prêmio (*${camp.premio}*) aqui na Fogo na Bomba! Venha nos visitar de segunda a sexta-feira e garantir o seu carimbo. ⭐🚗\n\nAcesse seu cartão: ${linkCartao}`;
 
                 corpoT.innerHTML += `
                     <tr class="border-b hover:bg-slate-50">
