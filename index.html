@@ -30,7 +30,7 @@
     </div>
 
     <!-- TELA EXTERNA DO CLIENTE -->
-    <div id="app-cliente-view" class="hidden min-h-screen bg-slate-100 flex items-center justify-center p-4">
+    <div id="app-cliente-view" class="hidden min-h-screen bg-slate-100 flex flex-col items-center justify-center p-4">
         <div id="cliente-tela-cadastro" class="max-w-md w-full bg-white rounded-2xl border border-slate-200 shadow-sm p-8 space-y-6">
             <div class="text-center space-y-2">
                 <div class="w-12 h-12 bg-slate-800 text-white rounded-xl mx-auto flex items-center justify-center text-xl font-bold">
@@ -103,6 +103,14 @@
                 </div>
             </div>
         </div>
+
+        <!-- RODAPÉ DA TELA DO CLIENTE -->
+        <div class="max-w-md w-full mt-4 text-center space-y-2 px-4">
+            <p class="text-xs text-slate-500 font-medium">Quer criar um cartão para a sua empresa?</p>
+            <a href="https://wa.me/5511912692912?text=Olá%2C%20gostaria%20de%20criar%20um%20cartão%20de%20fidelidade%20digital%20para%20a%20minha%20empresa!" target="_blank" class="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium py-2 px-4 rounded-xl shadow-sm transition">
+                <i class="fa-brands fa-whatsapp text-sm"></i> Falar no WhatsApp
+            </a>
+        </div>
     </div>
 
     <!-- PAINEL ADMIN -->
@@ -131,109 +139,119 @@
                 <div class="w-6"></div>
             </header>
 
-            <main class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
-                <div id="tab-dashboard" class="space-y-6">
-                    <div class="bg-white p-6 rounded-xl border shadow-sm"><h1 class="text-xl md:text-2xl font-bold text-slate-800">Painel de Controle - Fogo na Bomba 📊</h1></div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                        <div class="bg-white p-6 rounded-xl border shadow-sm"><h3 class="text-slate-400 text-xs font-semibold uppercase">CLIENTES</h3><p id="metric-clientes" class="text-3xl font-bold mt-2">0</p></div>
-                        <div class="bg-white p-6 rounded-xl border shadow-sm"><h3 class="text-slate-400 text-xs font-semibold uppercase">SELOS ⭐</h3><p id="metric-selos" class="text-3xl font-bold text-amber-500 mt-2">0</p></div>
-                        <div class="bg-white p-6 rounded-xl border shadow-sm"><h3 class="text-slate-400 text-xs font-semibold uppercase">PRÊMIOS</h3><p id="metric-premios" class="text-3xl font-bold text-emerald-600 mt-2">0</p></div>
-                    </div>
-                </div>
-
-                <div id="tab-config" class="hidden space-y-6">
-                    <div class="bg-white p-6 rounded-xl border shadow-sm max-w-xl space-y-4">
-                        <h2 class="text-lg font-bold text-slate-800">Fundo do Cartão</h2>
-                        <input type="file" id="input-fundo-cartao" accept="image/*" onchange="carregarImagemFundo(event)" class="w-full text-sm text-slate-500 border rounded-lg p-2">
-                        <div id="preview-container" class="hidden"><div id="preview-fundo" class="w-full h-40 rounded-lg bg-cover bg-center border"></div></div>
-                        <button onclick="salvarFotoFundo()" class="bg-slate-800 text-white px-5 py-2.5 rounded-lg text-sm">Salvar Fundo</button>
-                    </div>
-                </div>
-
-                <div id="tab-campanhas" class="hidden space-y-6">
-                    <div class="bg-white p-6 rounded-xl border shadow-sm">
-                        <div class="flex justify-between items-center mb-6">
-                            <h2 class="text-lg font-bold text-slate-800">Campanhas</h2>
-                            <button onclick="abrirModalCampanha()" class="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm"><i class="fa-solid fa-plus mr-1"></i> Nova Campanha</button>
+            <main class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 flex flex-col justify-between">
+                <div class="space-y-6">
+                    <div id="tab-dashboard" class="space-y-6">
+                        <div class="bg-white p-6 rounded-xl border shadow-sm"><h1 class="text-xl md:text-2xl font-bold text-slate-800">Painel de Controle - Fogo na Bomba 📊</h1></div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                            <div class="bg-white p-6 rounded-xl border shadow-sm"><h3 class="text-slate-400 text-xs font-semibold uppercase">CLIENTES</h3><p id="metric-clientes" class="text-3xl font-bold mt-2">0</p></div>
+                            <div class="bg-white p-6 rounded-xl border shadow-sm"><h3 class="text-slate-400 text-xs font-semibold uppercase">SELOS ⭐</h3><p id="metric-selos" class="text-3xl font-bold text-amber-500 mt-2">0</p></div>
+                            <div class="bg-white p-6 rounded-xl border shadow-sm"><h3 class="text-slate-400 text-xs font-semibold uppercase">PRÊMIOS</h3><p id="metric-premios" class="text-3xl font-bold text-emerald-600 mt-2">0</p></div>
                         </div>
-                        <div id="lista-campanhas" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
                     </div>
-                </div>
 
-                <div id="tab-validador" class="hidden space-y-6">
-                    <div class="max-w-lg mx-auto space-y-6">
-                        <div class="bg-white p-6 rounded-xl border shadow-sm flex flex-col md:flex-row justify-between items-center gap-6">
-                            <div class="space-y-2 flex-1">
-                                <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-link text-slate-600 mr-2"></i> Link do Cartão do Cliente</h3>
-                                <div class="flex gap-2 pt-1">
-                                    <input type="text" id="input-link-cliente" readonly class="bg-slate-50 border rounded-lg px-2.5 py-1.5 text-[11px] text-slate-600 w-full focus:outline-none">
-                                    <button onclick="copiarLinkCliente()" class="bg-slate-800 text-white px-3 py-1.5 rounded-lg text-xs shrink-0"><i class="fa-solid fa-copy"></i></button>
-                                </div>
-                            </div>
-                            <div class="bg-slate-50 p-3 rounded-xl border flex flex-col items-center justify-center shrink-0">
-                                <div id="qrcode-container" class="bg-white p-1 rounded border"></div>
-                                <span class="text-[9px] font-semibold text-slate-400 mt-1 uppercase">QR CODE</span>
-                            </div>
+                    <div id="tab-config" class="hidden space-y-6">
+                        <div class="bg-white p-6 rounded-xl border shadow-sm max-w-xl space-y-4">
+                            <h2 class="text-lg font-bold text-slate-800">Fundo do Cartão</h2>
+                            <input type="file" id="input-fundo-cartao" accept="image/*" onchange="carregarImagemFundo(event)" class="w-full text-sm text-slate-500 border rounded-lg p-2">
+                            <div id="preview-container" class="hidden"><div id="preview-fundo" class="w-full h-40 rounded-lg bg-cover bg-center border"></div></div>
+                            <button onclick="salvarFotoFundo()" class="bg-slate-800 text-white px-5 py-2.5 rounded-lg text-sm">Salvar Fundo</button>
                         </div>
+                    </div>
 
+                    <div id="tab-campanhas" class="hidden space-y-6">
                         <div class="bg-white p-6 rounded-xl border shadow-sm">
-                            <h2 class="text-lg font-bold text-slate-800 mb-4 text-center">Caixa / Validador de Selos</h2>
-                            <div class="space-y-4 text-sm">
-                                <div class="flex gap-2">
-                                    <input type="text" id="busca-cliente-input" placeholder="Digite WhatsApp ou ID (ex: 11984681343 ou CLI-1)" class="w-full bg-slate-50 border rounded-lg px-4 py-2.5 focus:outline-none">
-                                    <button onclick="buscarClienteCaixa()" class="bg-slate-800 text-white px-5 py-2.5 rounded-lg font-medium transition"><i class="fa-solid fa-search"></i></button>
-                                </div>
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-lg font-bold text-slate-800">Campanhas</h2>
+                                <button onclick="abrirModalCampanha()" class="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm"><i class="fa-solid fa-plus mr-1"></i> Nova Campanha</button>
+                            </div>
+                            <div id="lista-campanhas" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                        </div>
+                    </div>
 
-                                <div id="resultado-busca-container" class="hidden border bg-slate-50 rounded-xl p-4 space-y-4">
-                                    <div class="flex justify-between items-center border-b pb-3">
+                    <div id="tab-validador" class="hidden space-y-6">
+                        <div class="max-w-lg mx-auto space-y-6">
+                            <div class="bg-white p-6 rounded-xl border shadow-sm flex flex-col md:flex-row justify-between items-center gap-6">
+                                <div class="space-y-2 flex-1">
+                                    <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-link text-slate-600 mr-2"></i> Link do Cartão do Cliente</h3>
+                                    <div class="flex gap-2 pt-1">
+                                        <input type="text" id="input-link-cliente" readonly class="bg-slate-50 border rounded-lg px-2.5 py-1.5 text-[11px] text-slate-600 w-full focus:outline-none">
+                                        <button onclick="copiarLinkCliente()" class="bg-slate-800 text-white px-3 py-1.5 rounded-lg text-xs shrink-0"><i class="fa-solid fa-copy"></i></button>
+                                    </div>
+                                </div>
+                                <div class="bg-slate-50 p-3 rounded-xl border flex flex-col items-center justify-center shrink-0">
+                                    <div id="qrcode-container" class="bg-white p-1 rounded border"></div>
+                                    <span class="text-[9px] font-semibold text-slate-400 mt-1 uppercase">QR CODE</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-6 rounded-xl border shadow-sm">
+                                <h2 class="text-lg font-bold text-slate-800 mb-4 text-center">Caixa / Validador de Selos</h2>
+                                <div class="space-y-4 text-sm">
+                                    <div class="flex gap-2">
+                                        <input type="text" id="busca-cliente-input" placeholder="Digite WhatsApp ou ID (ex: 11984681343 ou CLI-1)" class="w-full bg-slate-50 border rounded-lg px-4 py-2.5 focus:outline-none">
+                                        <button onclick="buscarClienteCaixa()" class="bg-slate-800 text-white px-5 py-2.5 rounded-lg font-medium transition"><i class="fa-solid fa-search"></i></button>
+                                    </div>
+
+                                    <div id="resultado-busca-container" class="hidden border bg-slate-50 rounded-xl p-4 space-y-4">
+                                        <div class="flex justify-between items-center border-b pb-3">
+                                            <div>
+                                                <h4 id="res-nome" class="font-bold text-slate-800 text-base">Nome</h4>
+                                                <p class="text-xs text-slate-500">ID: <span id="res-id">CLI-0</span> | Tel: <span id="res-tel"></span></p>
+                                            </div>
+                                        </div>
                                         <div>
-                                            <h4 id="res-nome" class="font-bold text-slate-800 text-base">Nome</h4>
-                                            <p class="text-xs text-slate-500">ID: <span id="res-id">CLI-0</span> | Tel: <span id="res-tel"></span></p>
+                                            <label class="block font-medium text-slate-700 mb-1">Campanha</label>
+                                            <select id="res-campanha" onchange="mudarCampanhaCaixa(this.value)" class="w-full bg-white border rounded-lg px-3 py-2 text-slate-800"></select>
                                         </div>
-                                    </div>
-                                    <div>
-                                        <label class="block font-medium text-slate-700 mb-1">Campanha</label>
-                                        <select id="res-campanha" onchange="mudarCampanhaCaixa(this.value)" class="w-full bg-white border rounded-lg px-3 py-2 text-slate-800"></select>
-                                    </div>
-                                    <div class="bg-white p-3 rounded-lg border space-y-2">
-                                        <div class="flex items-center justify-between">
-                                            <span class="font-medium text-slate-700">Selos:</span>
-                                            <span id="res-selos-qtd" class="text-xl font-bold text-amber-500">0 / 5 ⭐</span>
+                                        <div class="bg-white p-3 rounded-lg border space-y-2">
+                                            <div class="flex items-center justify-between">
+                                                <span class="font-medium text-slate-700">Selos:</span>
+                                                <span id="res-selos-qtd" class="text-xl font-bold text-amber-500">0 / 5 ⭐</span>
+                                            </div>
+                                            <div id="res-historico-selos" class="pt-2 border-t text-xs text-slate-500 space-y-1"></div>
                                         </div>
-                                        <div id="res-historico-selos" class="pt-2 border-t text-xs text-slate-500 space-y-1"></div>
-                                    </div>
-                                    <div class="grid grid-cols-2 gap-2">
-                                        <button onclick="removerCarimboClienteExistente()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 py-2.5 rounded-lg font-medium text-xs border">Remover Selo</button>
-                                        <button onclick="adicionarCarimboClienteExistente()" class="bg-slate-800 hover:bg-slate-700 text-white py-2.5 rounded-lg font-medium text-xs">Adicionar Selo ⭐</button>
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <button onclick="removerCarimboClienteExistente()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 py-2.5 rounded-lg font-medium text-xs border">Remover Selo</button>
+                                            <button onclick="adicionarCarimboClienteExistente()" class="bg-slate-800 hover:bg-slate-700 text-white py-2.5 rounded-lg font-medium text-xs">Adicionar Selo ⭐</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div id="tab-clientes" class="hidden space-y-6">
-                    <div class="bg-white p-6 rounded-xl border shadow-sm space-y-4">
-                        <div class="flex justify-between items-center"><h2 class="text-lg font-bold">Base de Clientes</h2><span id="contador-registros" class="bg-slate-100 text-xs px-3 py-1.5 rounded">0 registros</span></div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t text-sm">
-                            <input type="text" id="filtro-texto" oninput="renderizarTabelaClientes()" placeholder="🔍 Buscar por nome, WhatsApp ou ID..." class="bg-slate-50 border rounded-lg px-3.5 py-2">
-                            <select id="filtro-tabela-campanha" onchange="renderizarTabelaClientes()" class="bg-slate-50 border rounded-lg px-3.5 py-2">
-                                <option value="todas">Todas as Campanhas</option>
-                                <option value="falta1">⭐ Falta 1 selo para o prêmio!</option>
-                                <option value="falta2">⭐ Faltam 2 selos para o prêmio!</option>
-                                <option value="falta3">⭐ Faltam 3 selos para o prêmio!</option>
-                            </select>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left text-sm text-slate-600">
-                                <thead class="bg-slate-100 text-xs uppercase">
-                                    <tr><th class="p-3">ID</th><th class="p-3">Nome</th><th class="p-3">WhatsApp</th><th class="p-3">Progresso</th><th class="p-3 text-right">Ação / WhatsApp</th></tr>
-                                </thead>
-                                <tbody id="tabela-clientes-corpo"></tbody>
-                            </table>
+                    <div id="tab-clientes" class="hidden space-y-6">
+                        <div class="bg-white p-6 rounded-xl border shadow-sm space-y-4">
+                            <div class="flex justify-between items-center"><h2 class="text-lg font-bold">Base de Clientes</h2><span id="contador-registros" class="bg-slate-100 text-xs px-3 py-1.5 rounded">0 registros</span></div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t text-sm">
+                                <input type="text" id="filtro-texto" oninput="renderizarTabelaClientes()" placeholder="🔍 Buscar por nome, WhatsApp ou ID..." class="bg-slate-50 border rounded-lg px-3.5 py-2">
+                                <select id="filtro-tabela-campanha" onchange="renderizarTabelaClientes()" class="bg-slate-50 border rounded-lg px-3.5 py-2">
+                                    <option value="todas">Todas as Campanhas</option>
+                                    <option value="falta1">⭐ Falta 1 selo para o prêmio!</option>
+                                    <option value="falta2">⭐ Faltam 2 selos para o prêmio!</option>
+                                    <option value="falta3">⭐ Faltam 3 selos para o prêmio!</option>
+                                </select>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-sm text-slate-600">
+                                    <thead class="bg-slate-100 text-xs uppercase">
+                                        <tr><th class="p-3">ID</th><th class="p-3">Nome</th><th class="p-3">WhatsApp</th><th class="p-3">Progresso</th><th class="p-3 text-right">Ação / WhatsApp</th></tr>
+                                    </thead>
+                                    <tbody id="tabela-clientes-corpo"></tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- RODAPÉ DO PAINEL ADMIN -->
+                <footer class="mt-8 pt-4 border-t border-slate-200 text-center text-xs text-slate-500 flex items-center justify-center gap-2 pb-2">
+                    <span>Desenvolvido por Lucas Biazoto</span>
+                    <a href="https://github.com/LucasBiazoto" target="_blank" class="inline-flex items-center justify-center w-7 h-7 bg-slate-800 hover:bg-slate-700 text-white rounded-full transition shadow-sm" title="GitHub de Lucas Biazoto">
+                        <i class="fa-brands fa-github text-sm"></i>
+                    </a>
+                </footer>
             </main>
         </div>
     </div>
@@ -487,7 +505,6 @@
             window.location.href = window.location.pathname + '?cliente=ver';
         };
 
-        // COMPRESSOR AUTOMÁTICO DE IMAGEM PARA EVITAR O ERRO DO FIREBASE
         window.carregarImagemFundo = function(e) {
             const file = e.target.files[0];
             if (file) {
